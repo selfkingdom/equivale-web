@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f4">
+  <meta name="description" content="Convierte cualquier cantidad en días de gasto público, edificios emblemáticos y artículos conocidos. Una cifra, una comparación.">
+  <title>Equivale · El coste de las cosas, en perspectiva</title>
+  <style>
+    :root {
+      --bg: #f7f7f4;
+      --white: #ffffff;
+      --text: #192521;
+      --muted: #64726b;
+      --border: #dfe5df;
+      --green: #174a3d;
+      --lime: #c9f178;
+      --focus: #548e6c;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); }
+    a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    a:hover { color: var(--green); }
+    .shell { width: min(840px, calc(100% - 36px)); margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); }
+    .nav { display: flex; justify-content: space-between; align-items: center; min-height: 75px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 850; letter-spacing: -.07em; }
+    .mark { display: grid; place-items: center; background: var(--green); color: var(--lime); border-radius: 9px; width: 32px; height: 32px; font-size: 21px; letter-spacing: 0; line-height: 1; }
+    .nav-tag { color: var(--muted); font-size: 12px; font-weight: 600; }
+    main { padding: 72px 0 48px; }
+    .intro { text-align: center; margin-bottom: 38px; }
+    .eyebrow { color: var(--green); font-weight: 800; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { font-size: clamp(34px, 6.3vw, 62px); line-height: 1.065; letter-spacing: -.067em; font-weight: 840; max-width: 720px; margin: 16px auto 19px; }
+    h1 em { font-style: normal; color: #2d765d; }
+    .intro p { color: var(--muted); margin: 0 auto; max-width: 560px; font-size: 16px; line-height: 1.55; }
+    .calculator { background: var(--white); border: 1px solid var(--border); padding: 30px; border-radius: 22px 22px 0 0; box-shadow: 0 14px 48px #1c3c2b08; }
+    .field + .field { margin-top: 26px; }
+    .field-label { display: block; margin-bottom: 10px; font-size: 14px; font-weight: 750; }
+    .amount-wrap { display: grid; grid-template-columns: 1fr 200px; gap: 10px; }
+    input, select { width: 100%; height: 61px; color: var(--text); background: #fcfdfb; border: 1.5px solid var(--border); border-radius: 12px; padding: 0 17px; font: inherit; }
+    input { font-size: 27px; font-weight: 780; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
+    select { font-size: 14px; font-weight: 650; padding-right: 35px; cursor: pointer; }
+    input:focus, select:focus { outline: 3px solid #a4d9b4; outline-offset: 1px; border-color: var(--focus); }
+    #reference { font-size: 15px; }
+    .categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 12px; }
+    .category { min-height: 51px; background: #f8faf7; border: 1.5px solid var(--border); border-radius: 11px; color: var(--text); font: inherit; font-size: 14px; font-weight: 740; cursor: pointer; padding: 9px 7px; transition: background .15s, border-color .15s; }
+    .category:hover { border-color: #8fb49a; }
+    .category.active { background: var(--green); border-color: var(--green); color: #fff; }
+    .category:focus-visible { outline: 3px solid #a4d9b4; outline-offset: 2px; }
+    .category-help { color: var(--muted); font-size: 12px; margin: 10px 0 0; }
+    .error { color: #ac342c; font-size: 13px; margin: 11px 0 0; display: none; }
+    .error.show { display: block; }
+    .answer { background: var(--green); color: white; border-radius: 0 0 22px 22px; padding: 33px 36px 35px; min-height: 215px; }
+    .answer-caption { color: #c8e6d9; font-size: 14px; font-weight: 600; margin: 0 0 10px; }
+    .answer-value { font-size: clamp(46px, 9vw, 82px); letter-spacing: -.082em; line-height: 1.05; font-weight: 850; margin: 0; font-variant-numeric: tabular-nums; }
+    .answer-unit { font-size: clamp(22px, 3vw, 27px); font-weight: 750; letter-spacing: -.045em; }
+    .answer-detail { font-size: 14px; color: #d3e9de; margin: 15px 0 0; min-height: 22px; }
+    .source { padding: 21px 12px 0; text-align: center; color: var(--muted); font-size: 12px; line-height: 1.65; max-width: 760px; margin: 0 auto; }
+    .source p { margin: 0 0 8px; }
+    .source .source-header { font-size: 13px; color: var(--text); font-weight: 650; }
+    .source .small-print { font-size: 11px; }
+    .reference-title { font-weight: 700; }
+    .source strong { color: #425248; font-weight: 750; }
+    footer { text-align: center; padding: 8px 20px 30px; color: #8b968e; font-size: 12px; }
+    @media (max-width: 570px) {
+      .nav { min-height: 64px; }
+      .nav-tag { font-size: 11px; }
+      main { padding-top: 51px; }
+      .intro { margin-bottom: 32px; }
+      .intro p { font-size: 14px; }
+      .calculator { padding: 21px; border-radius: 18px 18px 0 0; }
+      .amount-wrap { grid-template-columns: minmax(0, 1fr) 150px; gap: 8px; }
+      input, select { height: 57px; padding: 0 12px; }
+      input { font-size: 25px; }
+      select { font-size: 12px; }
+      #reference { font-size: 13px; }
+      .categories { gap: 6px; }
+      .category { font-size: 12px; min-height: 49px; }
+      .answer { border-radius: 0 0 18px 18px; padding: 29px 22px; min-height: 195px; }
+      .source { font-size: 11px; }
+    }
+    @media (max-width: 365px) {
+      .amount-wrap { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="shell nav">
+      <div class="logo"><span class="mark" aria-hidden="true">=</span><span>equivale.</span></div>
+      <div class="nav-tag">Los números, en perspectiva.</div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="intro">
+      <div class="eyebrow">El coste de las cosas</div>
+      <h1>El coste de las cosas, <em>en perspectiva.</em></h1>
+      <p>Introduce un importe y descubre a qué equivale en gasto público, edificios y artículos conocidos.</p>
+    </section>
+
+    <section aria-label="Calculadora de equivalencias">
+      <div class="calculator">
+        <div class="field">
+          <label class="field-label" for="amount">¿Cuánto cuesta?</label>
+          <div class="amount-wrap">
+            <input id="amount" name="amount" type="text" inputmode="decimal" autocomplete="off" value="500" aria-describedby="amount-error" spellcheck="false">
+            <select id="unit" name="unit" aria-label="Unidad de la cantidad">
+              <option value="1000">Miles de euros</option>
+              <option value="1000000" selected>Millones de euros</option>
+              <option value="1000000000">Miles de millones de euros</option>
+            </select>
+          </div>
+          <p class="error" id="amount-error" role="alert">Introduce una cantidad válida de cero o más.</p>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="reference">¿A qué equivale?</label>
+          <div class="categories" role="group" aria-label="Tipo de equivalencia">
+            <button type="button" class="category active" data-category="publico" aria-pressed="true">Gasto público</button>
+            <button type="button" class="category" data-category="edificios" aria-pressed="false">Edificios</button>
+            <button type="button" class="category" data-category="articulos" aria-pressed="false">Artículos</button>
+          </div>
+          <select id="reference" name="reference" aria-label="Referencia de comparación"></select>
+        </div>
+      </div>
+
+      <div class="answer" aria-live="polite" aria-atomic="true">
+        <p class="answer-caption">Esa cantidad equivale aproximadamente a</p>
+        <p class="answer-value"><span id="result">0,90</span> <span class="answer-unit" id="result-unit">días de pensiones contributivas</span></p>
+        <p class="answer-detail" id="breakdown">Es decir, unas 21 horas y 31 minutos.</p>
+      </div>
+    </section>
+
+    <div class="source" aria-live="polite">
+      <p class="source-header" id="source-value">Fuente de la referencia seleccionada</p>
+      <p id="source-explanation">Las equivalencias se calculan con los importes documentados de cada referencia.</p>
+      <p><a id="source-link" href="https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/Presupuestos/PGE/PGE2025Prorroga/Paginas/PGE2025Prorroga.aspx" target="_blank" rel="noopener noreferrer">Consultar fuente oficial</a></p>
+      <p class="small-print">Las cifras son nominales del año señalado: pueden corresponder a reformas, complejos o compras de varias unidades. En las compras por lotes, el importe unitario es un promedio que puede incluir servicios adicionales. Los presupuestos de 2023 no son gasto ejecutado de 2026. Esta comparación no implica una reasignación de fondos.</p>
+    </div>
+  </main>
+  <footer>Equivale compara magnitudes. No equipara financiación pública y privada ni ajusta por inflación.</footer>
+
+  <script>
+    'use strict';
+    // Las cuantías anuales de 2023 proceden de los PGE aprobados (capítulos 1 a 8).
+    // IMPORTANTE: son dotaciones presupuestarias, NO ejecuciones de gasto de 2026.
+    // Subcategorías y políticas agregadas pueden solaparse: NO sumar las filas.
+    const URLS = Object.freeze({
+      politicas: 'https://www.sepg.pap.hacienda.gob.es/Presup/PGE2023Ley/MaestroDocumentos/PGE-ROM/doc/HTM/N_23_E_R_6_2_R_1_1.HTM',
+      seguridad: 'https://www.congreso.es/docu/pge2023/pge_2023-web/PGE-ROM/doc/HTM/N_23_A_R_31_2_1_G_1_2_1_1.HTM',
+      dependencia: 'https://www.sepg.pap.hacienda.gob.es/Presup/PGE2023Ley/MaestroDocumentos/PGE-ROM/doc/HTM/N_23_E_R_31_2_1_G_1_1_1231I_P.HTM',
+      becas: 'https://www.boe.es/buscar/act.php?id=BOE-A-2022-22128',
+      cooperacion: 'https://www.congreso.es/docu/pge2023/pge_2023-web/PGE-ROM/doc/HTM/N_23_A_R_31_112_1_1_2_3.HTM',
+      migracion: 'https://www.sepg.pap.hacienda.gob.es/Presup/PGE2023Ley/MaestroDocumentos/PGE-ROM/doc/HTM/N_23_E_R_31_132_1_1_3_1.HTM',
+      pension: 'https://www.inclusion.gob.es/es/w/la-pension-media-del-sistema-de-la-seguridad-social-alcanza-los-1.376-1-euros-en-octubre-un-4-6-mas-alta-que-hace-un-ano'
+    });
+    // Presupuesto expresado en euros. Presupuesto anual / 365 días.
+    const PARTIDAS = Object.freeze({
+      pensiones: { nombre: 'pensiones contributivas', anual: 14_540_000_000 * 14, anio: '2026', tipo: 'estimación basada en nómina oficial de octubre', fuente: URLS.pension,
+        nota: 'Estimación a partir de la nómina mensual de octubre de 2026 (14.540 M€), multiplicada por 14 pagas. No representa el gasto anual cerrado ni incluye clases pasivas y pensiones no contributivas.' },
+      desempleo: { nombre: 'prestaciones por desempleo', anual: 21_278_019_880, anio: '2023', tipo: 'presupuesto aprobado · política 25', fuente: URLS.politicas,
+        nota: 'La política 25 incluye prestaciones por desempleo; es un presupuesto estatal, no una estimación de gasto actual.' },
+      incapacidad: { nombre: 'incapacidad temporal y otras prestaciones', anual: 16_792_938_290, anio: '2023', tipo: 'presupuesto aprobado · programa 221B', fuente: URLS.seguridad,
+        nota: 'Incluye incapacidad temporal y otras prestaciones económicas de la Seguridad Social; no equivale únicamente a bajas por enfermedad.' },
+      empleo: { nombre: 'fomento del empleo', anual: 8_028_785_390, anio: '2023', tipo: 'presupuesto aprobado · política 24', fuente: URLS.politicas,
+        nota: 'Incluye medidas de formación, inserción y fomento del empleo; no es una transferencia exclusiva a personas desempleadas.' },
+      imv: { nombre: 'ingreso mínimo vital y prestaciones familiares', anual: 4_193_128_430, anio: '2023', tipo: 'presupuesto aprobado · programa 221A', fuente: URLS.seguridad,
+        nota: 'El importe engloba ingreso mínimo vital y prestaciones familiares; no debe describirse como gasto exclusivo en IMV.' },
+      dependencia: { nombre: 'atención a la dependencia', anual: 3_522_300_750, anio: '2023', tipo: 'presupuesto aprobado · programa 231I', fuente: URLS.dependencia,
+        nota: 'Financiación estatal de autonomía personal y dependencia; no incluye por sí sola todo el gasto autonómico o local en dependencia.' },
+      vivienda: { nombre: 'vivienda y rehabilitación', anual: 3_471_605_650, anio: '2023', tipo: 'presupuesto aprobado · política 26', fuente: URLS.politicas,
+        nota: 'Acceso a vivienda y fomento de edificación; incorpora distintos programas de ayudas, inversión y financiación. No todo son subvenciones directas.' },
+      no_contributivas: { nombre: 'pensiones no contributivas y prestaciones asistenciales', anual: 2_803_945_600, anio: '2023', tipo: 'presupuesto aprobado · programa 212A', fuente: URLS.seguridad,
+        nota: 'Programa de la Seguridad Social separado de las pensiones contributivas.' },
+      becas: { nombre: 'becas y ayudas a estudiantes', anual: 2_599_719_240, anio: '2023', tipo: 'presupuesto aprobado · programa 323M', fuente: URLS.becas,
+        nota: 'Programa 323M agregado en Educación y Universidades, no el gasto total de todos los niveles educativos.' },
+      cooperacion: { nombre: 'cooperación para el desarrollo', anual: 997_403_190, anio: '2023', tipo: 'presupuesto aprobado · programa 143A (Asuntos Exteriores)', fuente: URLS.cooperacion,
+        nota: 'Programa 143A del Ministerio de Asuntos Exteriores; no es toda la ayuda oficial al desarrollo española, que se financia también por otras vías.' },
+      migracion: { nombre: 'programas de atención a inmigrantes', anual: 750_626_820, anio: '2023', tipo: 'presupuesto aprobado · programa 231H', fuente: URLS.migracion,
+        nota: 'Acciones en favor de los inmigrantes: incluyen acogida, servicios, personal y subvenciones. No son 750 millones en pagos directos a inmigrantes.' }
+    });
+
+    // Edificios: coste del alcance identificado en cada ficha, no su valor de mercado.
+    // Para referencias "más de" se emplea el umbral publicado como aproximación conservadora.
+    const EDIFICIOS = Object.freeze({
+      bernabeu: { nombre:'reformas del Santiago Bernabéu', selector:'Reforma del Santiago Bernabéu (Madrid)', coste:1_407_700_000, anio:'2026', tipo:'inversión acumulada en reforma', fuente:'https://www.europapress.es/economia/noticia-real-madrid-eleva-1408-millones-inversion-bernabeu-ingresos-1221-millones-20260729143921.html', nota:'Inversión acumulada a cierre de la temporada 2025/26, según el Real Madrid. Es una reforma, no la construcción de un estadio nuevo.' },
+      palau: { nombre:'Palau de les Arts', selector:'Palau de les Arts Reina Sofía (Valencia)', coste:478_500_000, anio:'2012', tipo:'coste de construcción publicado', fuente:'https://elpais.com/ccaa/2012/05/04/valencia/1336164264_927671.html', nota:'Coste del edificio comunicado por la Generalitat en 2012; no equivale a toda la Ciudad de las Artes y las Ciencias.' },
+      metropolitano: { nombre:'estadios Metropolitano', selector:'Estadio Metropolitano (Madrid)', coste:334_355_000, anio:'2017', tipo:'coste registrado por el club', fuente:'https://www.atleticodemadrid.com/files/cuentas_anuales_2023.pdf', nota:'Coste total registrado de construcción, incluida la parcela (60,3 M€), según las cuentas del Atlético de Madrid. No son solo obras.' },
+      caleido: { nombre:'complejos Caleido', selector:'Complejo Caleido (Madrid)', coste:300_000_000, anio:'2017', tipo:'umbral de inversión anunciada', fuente:'https://www.madrid.es/portales/munimadrid/es/Inicio/El-Ayuntamiento/Notas-de-prensa/Caleido-el-complejo-arquitectonico-que-revitalizara-el-norte-de-la-Castellana/?vgnextchannel=6091317d3d2a7010VgnVCM100000dc0ca8c0RCRD&vgnextfmt=default&vgnextoid=553fde0266789510VgnVCM1000001d4a900aRCRD', nota:'El Ayuntamiento indicó que la inversión total superaría los 300 M€, incluyendo edificación, urbanización, tasas y canon. Se usa 300 M€ como umbral, no como coste definitivo.' },
+      torre_sevilla: { nombre:'complejos Torre Sevilla', selector:'Complejo Torre Sevilla', coste:305_000_000, anio:'2016', tipo:'inversión en el complejo', fuente:'https://www.caixabank.com/es/actualidad/noticias/caixabank-completa-una-inversion-de-305-millones-en-el-complejo-torre-sevilla--1775-c-23772--', nota:'Inversión anunciada por CaixaBank para el complejo de torre y centro comercial, no exclusivamente para el rascacielos. No incluye por separado la inversión de CaixaForum Sevilla.' },
+      iberdrola: { nombre:'torres Iberdrola', selector:'Torre Iberdrola (Bilbao)', coste:200_000_000, anio:'2012', tipo:'umbral de inversión', fuente:'https://www.casareal.es/ES/Actividades/Paginas/actividades_actividades_detalle.aspx?data=9593', nota:'La Casa Real informó de una inversión superior a 200 M€. Se usa 200 M€ como umbral mínimo aproximado, no como coste exacto.' },
+      glories: { nombre:'torres Glòries', selector:'Torre Glòries / Agbar (Barcelona)', coste:130_000_000, anio:'2005', tipo:'coste de construcción aproximado', fuente:'https://es.prysmian.com/proyectos/2011-torre-agbar', nota:'Coste aproximado de la construcción, publicado para la antigua Torre Agbar, actualmente Torre Glòries.' },
+      guggenheim: { nombre:'museos Guggenheim Bilbao', selector:'Museo Guggenheim (Bilbao)', coste:84_140_000, anio:'1997', tipo:'construcción y entorno', fuente:'https://www.cultura.trentino.it/content/download/490215/18650781/file/07-Rapporto%20sulle%20Attivit%C3%A0%20culturali%20in%20Trentino%20-%20parte%20IV.pdf', nota:'Importe referido a edificación y ajardinamiento del entorno (84,14 M€), sin compra de colección ni aportaciones a la Fundación Guggenheim. Apertura en 1997.' },
+      botin: { nombre:'centros Botín', selector:'Centro Botín (Santander)', coste:61_000_000, anio:'2017', tipo:'coste de construcción', fuente:'https://www.bovis.es/es/proyecto/centro-botin-ref100001615.html', nota:'Coste de construcción indicado por la empresa de dirección del proyecto. Otras estimaciones incluyen obras exteriores, jardines y túnel y elevan la inversión total.' },
+      caixaforum: { nombre:'CaixaForum Madrid', selector:'CaixaForum Madrid', coste:60_000_000, anio:'2008', tipo:'coste del proyecto arquitectónico', fuente:'https://mediahub.fundacionlacaixa.org/es/investigacion-becas/salud/2008-02-13/obra-social-caixa-inaugura-caixaforum-madrid-nuevo-concepto-centro-social-y-cultural-4671.html', nota:'Coste publicado por la Fundación la Caixa de la transformación de la antigua central en centro cultural.' }
+    });
+
+    // Artículos: importe del contrato dividido por unidades, salvo precios de catálogo.
+    // Un promedio por lote NO representa necesariamente el precio aislado de una unidad.
+    const ARTICULOS = Object.freeze({
+      eurofighter: { nombre:'aviones Eurofighter', selector:'Avión Eurofighter (programa Halcón I)', coste:2_043_000_000/20, anio:'2022', tipo:'media de contrato de 20 unidades', fuente:'https://www.airbus.com/en/newsroom/press-releases/2022-06-spain-orders-20-eurofighter-jets-under-landmark-contract-to', nota:'2.043 M€ / 20 aviones. El contrato también incluye motores, simulador y servicios de apoyo: NO es el precio de fabricación aislado de un caza.' },
+      f100: { nombre:'fragatas F-100', selector:'Fragata F-100 Álvaro de Bazán', coste:1_682_000_000/4, anio:'2002', tipo:'media del programa original de cuatro', fuente:'https://www.servimedia.es/noticias/aznar-preside-laentrega-armada-primera-fragatas-f-100-construye-izar/1411123531', nota:'Unos 1.682 M€ por las primeras cuatro fragatas F-100, incluyendo sistemas de combate y apoyo asociados. Precio nominal de comienzos de los 2000, no actualizado por inflación.' },
+      f110: { nombre:'fragatas F-110', selector:'Fragata F-110 (nueva generación)', coste:4_325_000_000/5, anio:'2019', tipo:'media del programa de cinco', fuente:'https://www.navantia.es/es/actualidad/notas-prensa/navantia-bota-ferrol-primera-fragata-f110-armada-reina-sofia-madrina/', nota:'4.325 M€ / cinco fragatas del programa. Es promedio por unidad de programa, no precio de venta separado de cada buque.' },
+      submarino: { nombre:'submarinos S-80', selector:'Submarino S-80 (clase Isaac Peral)', coste:4_339_000_000/4, anio:'2025', tipo:'media del programa de cuatro', fuente:'https://www.infodefensa.com/texto-diario/mostrar/5714568/defensa-invierte-432-millones-mas-submarinos-s-80-armada-eleva-presupuesto-4339-millones', nota:'Presupuesto del programa de cuatro submarinos a finales de 2025, incluyendo formación, repuestos y apoyos. No es un precio de construcción aislado ni incorpora futuras ampliaciones.' },
+      dhc515: { nombre:'aviones apagafuegos DHC-515', selector:'Avión apagafuegos DHC-515', coste:375_561_223.07/7, anio:'2024', tipo:'media de adquisición de siete', fuente:'https://www.lamoncloa.gob.es/consejodeministros/referencias/paginas/2024/20240604-referencia-rueda-de-prensa-ministros.aspx', nota:'375,56 M€ estimados para adquirir siete aviones anfibios. Se divide el paquete entre siete, sin considerar actualizaciones futuras de la flota existente.' },
+      ave: { nombre:'trenes Talgo Avril', selector:'Tren de alta velocidad Talgo Avril', coste:337_500_000/15, anio:'2016', tipo:'media de fabricación por tren', fuente:'https://www.rtve.es/noticias/20161128/talgo-se-lleva-megacontrato-renfe-con-2642-millones-para-alta-velocidad/1447735.shtml', nota:'Fabricación de los primeros 15 trenes: 337,5 M€ / 15. Excluye expresamente el mantenimiento de 30 años (448,9 M€) para no inflar el precio unitario.' },
+      h135: { nombre:'helicópteros Airbus H135', selector:'Helicóptero Airbus H135', coste:310_000_000/36, anio:'2021', tipo:'media del contrato de 36', fuente:'https://www.europapress.es/nacional/noticia-gobierno-autoriza-compra-36-helicopteros-ligeros-defensa-interior-310-millones-euros-20211108185106.html', nota:'Contrato conjunto de 36 helicópteros para Interior y Defensa, con elementos para entrada en servicio. Promedio orientativo, no precio en catálogo.' },
+      bugatti: { nombre:'Bugatti Tourbillon', selector:'Coche Bugatti Tourbillon', coste:3_800_000, anio:'2026', tipo:'precio base de catálogo sin impuestos', fuente:'https://newsroom.bugatti.com/en/press-releases/the-bugatti-tourbillon-an-automotive-icon-pour-leternite', nota:'Precio anunciado por Bugatti: desde 3,8 M€ antes de impuestos y opciones. El precio final con IVA y personalización puede ser mayor.' },
+      resonancia: { nombre:'equipos de resonancia magnética', selector:'Equipo de resonancia magnética hospitalaria', coste:1_481_098.45, anio:'2025', tipo:'adjudicación de un equipo instalado', fuente:'https://gd.aragon.es/cgi-bin/CONT/BRSCGI?BASE=CONT&CMD=VERLST&SEC=CONT_PUBL&SORT=-EJER&docs=6601-6700', nota:'Adjudicación de 2025 de un equipo para el hospital de Teruel. Incluye suministro, obra, instalación, puesta en marcha y legalización; importe sin IVA.' },
+      autobus: { nombre:'autobuses eléctricos urbanos', selector:'Autobús eléctrico Irizar ieBus (EMT Madrid)', coste:30_750_000/50, anio:'2026', tipo:'media de adjudicación de 50', fuente:'https://www.emtmadrid.es/Noticias/El-Ayuntamiento-incorporara-a-la-flota-de-EMT-Madr.aspx', nota:'Adjudicación de hasta 30,75 M€ sin IVA para 50 autobuses Irizar ieBus en Madrid: 615.000 € por unidad. No incluye infraestructura de recarga.' }
+    });
+
+    const CATALOGOS = Object.freeze({ publico: PARTIDAS, edificios: EDIFICIOS, articulos: ARTICULOS });
+    const amountInput = document.querySelector('#amount');
+    const unitSelect = document.querySelector('#unit');
+    const referenceSelect = document.querySelector('#reference');
+    const categoryButtons = Array.from(document.querySelectorAll('[data-category]'));
+    const numberEl = document.querySelector('#result');
+    const unitEl = document.querySelector('#result-unit');
+    const detailEl = document.querySelector('#breakdown');
+    const errorEl = document.querySelector('#amount-error');
+    const sourceValue = document.querySelector('#source-value');
+    const sourceExplanation = document.querySelector('#source-explanation');
+    const sourceLink = document.querySelector('#source-link');
+    const spanish = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+    const integer = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0 });
+    const compact = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
+    let category = 'publico';
+
+    function parseSpanishNumber(input) {
+      let s = String(input).trim().replace(/\s/g, '').replace(/€/g, '');
+      if (!s || /[^\d.,]/.test(s)) return NaN;
+      const comma = s.lastIndexOf(',');
+      const dot = s.lastIndexOf('.');
+      if (comma !== -1 && dot !== -1) {
+        const sep = comma > dot ? ',' : '.';
+        const group = sep === ',' ? '.' : ',';
+        s = s.split(group).join('');
+        if (sep === ',') s = s.replace(',', '.');
+      } else if (comma !== -1) {
+        if ((s.match(/,/g) || []).length > 1) return NaN;
+        s = s.replace(',', '.');
+      } else if (dot !== -1) {
+        if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+        else if ((s.match(/\./g) || []).length > 1) return NaN;
+      }
+      const n = Number(s);
+      return Number.isFinite(n) && n >= 0 ? n : NaN;
+    }
+
+    function humanDuration(days) {
+      const seconds = days * 86400;
+      if (seconds < 1 && seconds > 0) return `Es decir, unos ${seconds.toLocaleString('es-ES', { maximumFractionDigits: 2 })} segundos.`;
+      if (seconds < 60) return `Es decir, unos ${integer.format(Math.round(seconds))} segundos.`;
+      const totalMinutes = Math.round(seconds / 60);
+      const wholeDays = Math.floor(totalMinutes / (24 * 60));
+      const hours = Math.floor((totalMinutes % (24 * 60)) / 60);
+      const minutes = totalMinutes % 60;
+      const chunks = [];
+      if (wholeDays > 0) chunks.push(`${integer.format(wholeDays)} ${wholeDays === 1 ? 'día' : 'días'}`);
+      if (hours > 0) chunks.push(`${hours} ${hours === 1 ? 'hora' : 'horas'}`);
+      if (minutes > 0 || chunks.length === 0) chunks.push(`${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`);
+      return `Es decir, ${chunks.join(', ').replace(/, ([^,]+)$/, ' y $1')}.`;
+    }
+
+    function setCategory(next) {
+      if (!CATALOGOS[next]) return;
+      category = next;
+      categoryButtons.forEach(btn => {
+        const active = btn.dataset.category === next;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(active));
+      });
+      referenceSelect.replaceChildren();
+      Object.entries(CATALOGOS[next]).forEach(([id, ref]) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = ref.selector || ref.nombre.charAt(0).toUpperCase() + ref.nombre.slice(1);
+        referenceSelect.append(option);
+      });
+      render();
+    }
+
+    function render() {
+      const amount = parseSpanishNumber(amountInput.value);
+      const euros = amount * Number(unitSelect.value);
+      const ref = CATALOGOS[category][referenceSelect.value];
+      if (!ref) return;
+      const valid = Number.isFinite(amount) && Number.isFinite(euros);
+      errorEl.classList.toggle('show', !valid);
+      amountInput.setAttribute('aria-invalid', valid ? 'false' : 'true');
+      sourceLink.href = ref.fuente;
+      sourceExplanation.textContent = ref.nota;
+      if (category === 'publico') {
+        sourceValue.textContent = `Referencia: ${ref.tipo} (${ref.anio}) · ${compact.format(ref.anual / 1_000_000)} millones €/año`;
+        unitEl.textContent = `días de ${ref.nombre}`;
+      } else {
+        const precio = `${compact.format(ref.coste)} €`;
+        sourceValue.textContent = `Referencia: ${ref.tipo} (${ref.anio}) · ${precio} por equivalencia`;
+        unitEl.textContent = ref.nombre;
+      }
+      if (!valid) {
+        numberEl.textContent = '—';
+        detailEl.textContent = 'Introduce una cantidad para ver el resultado.';
+        return;
+      }
+      const result = category === 'publico' ? euros / (ref.anual / 365) : euros / ref.coste;
+      numberEl.textContent = result > 0 && result < 0.005 ? '<0,01' : spanish.format(result);
+      if (category === 'publico') {
+        detailEl.textContent = humanDuration(result);
+      } else {
+        detailEl.textContent = `Coste de referencia: ${compact.format(ref.coste / 1_000_000)} millones de euros por unidad.`;
+      }
+    }
+
+    amountInput.addEventListener('input', render);
+    unitSelect.addEventListener('change', render);
+    referenceSelect.addEventListener('change', render);
+    categoryButtons.forEach(button => button.addEventListener('click', () => setCategory(button.dataset.category)));
+    setCategory('publico');
+  </script>
+</body>
+</html>
