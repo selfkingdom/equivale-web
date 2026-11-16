@@ -8,82 +8,104 @@
   <title>Equivale · El coste de las cosas, en perspectiva</title>
   <style>
     :root {
-      --bg: #f7f7f4;
-      --white: #ffffff;
-      --text: #192521;
-      --muted: #64726b;
-      --border: #dfe5df;
-      --green: #174a3d;
-      --lime: #c9f178;
-      --focus: #548e6c;
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-synthesis: none;
-      -webkit-font-smoothing: antialiased;
+      --bg:#f7f7f4; --white:#ffffff; --text:#192521; --muted:#64726b;
+      --border:#dfe5df; --green:#174a3d; --lime:#c9f178; --focus:#548e6c;
+      font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      font-synthesis:none; -webkit-font-smoothing:antialiased;
     }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); }
-    a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
-    a:hover { color: var(--green); }
-    .shell { width: min(840px, calc(100% - 36px)); margin: 0 auto; }
-    header { border-bottom: 1px solid var(--border); }
-    .nav { display: flex; justify-content: space-between; align-items: center; min-height: 75px; }
-    .logo { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 850; letter-spacing: -.07em; }
-    .mark { display: grid; place-items: center; background: var(--green); color: var(--lime); border-radius: 9px; width: 32px; height: 32px; font-size: 21px; letter-spacing: 0; line-height: 1; }
-    .nav-tag { color: var(--muted); font-size: 12px; font-weight: 600; }
-    main { padding: 72px 0 48px; }
-    .intro { text-align: center; margin-bottom: 38px; }
-    .eyebrow { color: var(--green); font-weight: 800; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
-    h1 { font-size: clamp(34px, 6.3vw, 62px); line-height: 1.065; letter-spacing: -.067em; font-weight: 840; max-width: 720px; margin: 16px auto 19px; }
-    h1 em { font-style: normal; color: #2d765d; }
-    .intro p { color: var(--muted); margin: 0 auto; max-width: 560px; font-size: 16px; line-height: 1.55; }
-    .calculator { background: var(--white); border: 1px solid var(--border); padding: 30px; border-radius: 22px 22px 0 0; box-shadow: 0 14px 48px #1c3c2b08; }
-    .field + .field { margin-top: 26px; }
-    .field-label { display: block; margin-bottom: 10px; font-size: 14px; font-weight: 750; }
-    .amount-wrap { display: grid; grid-template-columns: 1fr 200px; gap: 10px; }
-    input, select { width: 100%; height: 61px; color: var(--text); background: #fcfdfb; border: 1.5px solid var(--border); border-radius: 12px; padding: 0 17px; font: inherit; }
-    input { font-size: 27px; font-weight: 780; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
-    select { font-size: 14px; font-weight: 650; padding-right: 35px; cursor: pointer; }
-    input:focus, select:focus { outline: 3px solid #a4d9b4; outline-offset: 1px; border-color: var(--focus); }
-    #reference { font-size: 15px; }
-    .categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 12px; }
-    .category { min-height: 51px; background: #f8faf7; border: 1.5px solid var(--border); border-radius: 11px; color: var(--text); font: inherit; font-size: 14px; font-weight: 740; cursor: pointer; padding: 9px 7px; transition: background .15s, border-color .15s; }
-    .category:hover { border-color: #8fb49a; }
-    .category.active { background: var(--green); border-color: var(--green); color: #fff; }
-    .category:focus-visible { outline: 3px solid #a4d9b4; outline-offset: 2px; }
-    .category-help { color: var(--muted); font-size: 12px; margin: 10px 0 0; }
-    .error { color: #ac342c; font-size: 13px; margin: 11px 0 0; display: none; }
-    .error.show { display: block; }
-    .answer { background: var(--green); color: white; border-radius: 0 0 22px 22px; padding: 33px 36px 35px; min-height: 215px; }
-    .answer-caption { color: #c8e6d9; font-size: 14px; font-weight: 600; margin: 0 0 10px; }
-    .answer-value { font-size: clamp(46px, 9vw, 82px); letter-spacing: -.082em; line-height: 1.05; font-weight: 850; margin: 0; font-variant-numeric: tabular-nums; }
-    .answer-unit { font-size: clamp(22px, 3vw, 27px); font-weight: 750; letter-spacing: -.045em; }
-    .answer-detail { font-size: 14px; color: #d3e9de; margin: 15px 0 0; min-height: 22px; }
-    .source { padding: 21px 12px 0; text-align: center; color: var(--muted); font-size: 12px; line-height: 1.65; max-width: 760px; margin: 0 auto; }
-    .source p { margin: 0 0 8px; }
-    .source .source-header { font-size: 13px; color: var(--text); font-weight: 650; }
-    .source .small-print { font-size: 11px; }
-    .reference-title { font-weight: 700; }
-    .source strong { color: #425248; font-weight: 750; }
-    footer { text-align: center; padding: 8px 20px 30px; color: #8b968e; font-size: 12px; }
-    @media (max-width: 570px) {
-      .nav { min-height: 64px; }
-      .nav-tag { font-size: 11px; }
-      main { padding-top: 51px; }
-      .intro { margin-bottom: 32px; }
-      .intro p { font-size: 14px; }
-      .calculator { padding: 21px; border-radius: 18px 18px 0 0; }
-      .amount-wrap { grid-template-columns: minmax(0, 1fr) 150px; gap: 8px; }
-      input, select { height: 57px; padding: 0 12px; }
-      input { font-size: 25px; }
-      select { font-size: 12px; }
-      #reference { font-size: 13px; }
-      .categories { gap: 6px; }
-      .category { font-size: 12px; min-height: 49px; }
-      .answer { border-radius: 0 0 18px 18px; padding: 29px 22px; min-height: 195px; }
-      .source { font-size: 11px; }
+    * {box-sizing:border-box}
+    body {margin:0; min-height:100vh; background:var(--bg); color:var(--text)}
+    a {color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+    a:hover {color:var(--green)}
+    .shell {width:min(840px,calc(100% - 36px)); margin:0 auto}
+    header {border-bottom:1px solid var(--border)}
+    .nav {display:flex;justify-content:space-between;align-items:center;min-height:62px}
+    .logo {display:flex;align-items:center;gap:10px;font-size:19px;font-weight:850;letter-spacing:-.07em}
+    .mark {display:grid;place-items:center;background:var(--green);color:var(--lime);border-radius:9px;width:31px;height:31px;font-size:21px;letter-spacing:0;line-height:1}
+    .nav-tag {color:var(--muted);font-size:12px;font-weight:600}
+    main {padding:26px 0 14px}
+    .intro {text-align:center;margin-bottom:19px}
+    .eyebrow {color:var(--green);font-weight:800;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+    h1 {font-size:clamp(32px,4.6vw,45px);line-height:1.09;letter-spacing:-.067em;font-weight:840;max-width:720px;margin:8px auto 8px}
+    h1 em {font-style:normal;color:#2d765d}
+    .intro p {color:var(--muted);margin:0 auto;max-width:620px;font-size:14px;line-height:1.38}
+    .calculator {background:var(--white);border:1px solid var(--border);padding:20px 24px;border-radius:20px 20px 0 0;box-shadow:0 14px 48px #1c3c2b08}
+    .field + .field {margin-top:16px}
+    .field-label {display:block;margin-bottom:7px;font-size:13px;font-weight:750}
+    .amount-wrap {display:grid;grid-template-columns:minmax(0,1fr) 205px;gap:10px}
+    input,select {width:100%;height:47px;color:var(--text);background:#fcfdfb;border:1.5px solid var(--border);border-radius:11px;padding:0 15px;font:inherit}
+    input {font-size:24px;font-weight:780;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+    select {font-size:14px;font-weight:650;padding-right:30px;cursor:pointer}
+    input:focus,select:focus {outline:3px solid #a4d9b4;outline-offset:1px;border-color:var(--focus)}
+    #reference {font-size:14px}
+    .categories {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:0 0 8px}
+    .category {min-height:40px;background:#f8faf7;border:1.5px solid var(--border);border-radius:10px;color:var(--text);font:inherit;font-size:13px;font-weight:740;cursor:pointer;padding:7px;transition:background .15s,border-color .15s}
+    .category:hover {border-color:#8fb49a}
+    .category.active {background:var(--green);border-color:var(--green);color:#fff}
+    .category:focus-visible {outline:3px solid #a4d9b4;outline-offset:2px}
+    .error {color:#ac342c;font-size:12px;margin:7px 0 0;display:none}
+    .error.show {display:block}
+    .answer {background:var(--green);color:white;border-radius:0 0 20px 20px;padding:19px 27px 20px;min-height:0}
+    .answer-caption {color:#c8e6d9;font-size:13px;font-weight:600;margin:0 0 5px}
+    .answer-value {font-size:clamp(43px,6.7vw,60px);letter-spacing:-.082em;line-height:1.1;font-weight:850;margin:0;font-variant-numeric:tabular-nums}
+    .answer-unit {font-size:clamp(18px,2.4vw,23px);font-weight:750;letter-spacing:-.045em}
+    .answer-detail {font-size:13px;color:#d3e9de;margin:9px 0 0;min-height:17px}
+    /* Las fuentes siguen siempre disponibles, pero el texto extenso no ocupa pantalla al entrar. */
+    .source {padding:10px 12px 0;text-align:center;color:var(--muted);font-size:12px;line-height:1.55;max-width:760px;margin:0 auto}
+    .source summary {list-style:none;display:inline-flex;gap:7px;align-items:center;justify-content:center;cursor:pointer;color:var(--green);font-weight:750;border-radius:6px;padding:4px 9px}
+    .source summary::-webkit-details-marker {display:none}
+    .source summary:focus-visible {outline:3px solid #a4d9b4}
+    .source summary::after {content:'▾';display:inline-block;font-size:14px;transition:transform .12s}
+    .source[open] summary::after {transform:rotate(180deg)}
+    .source-content {padding:12px 0 4px}
+    .source p {margin:0 0 7px}
+    .source .source-header {font-size:13px;color:var(--text);font-weight:650}
+    .source .small-print {font-size:11px}
+    .source strong {color:#425248;font-weight:750}
+    footer {text-align:center;padding:7px 20px 13px;color:#8b968e;font-size:11px}
+    @media (max-height:800px) and (min-width:700px) {
+      .nav {min-height:55px}
+      main {padding:13px 0 7px}
+      .intro {margin-bottom:13px}
+      h1 {font-size:37px;margin:6px auto}
+      .intro p {font-size:13px}
+      .calculator {padding:16px 22px}
+      .field + .field {margin-top:12px}
+      input,select {height:44px}
+      .category {min-height:37px}
+      .answer {padding:15px 24px 16px}
+      .answer-value {font-size:50px}
+      .answer-detail {margin-top:6px}
+      .source {padding-top:4px}
+      footer {padding-bottom:4px}
     }
-    @media (max-width: 365px) {
-      .amount-wrap { grid-template-columns: 1fr; }
+    @media (max-width:570px) {
+      .shell {width:min(840px,calc(100% - 26px))}
+      .nav {min-height:57px}
+      .nav-tag {font-size:10px}
+      main {padding:24px 0 12px}
+      .intro {margin-bottom:17px}
+      h1 {font-size:clamp(30px,7.8vw,39px);margin:7px auto 9px}
+      .intro p {font-size:13px}
+      .calculator {padding:17px;border-radius:17px 17px 0 0}
+      .amount-wrap {grid-template-columns:minmax(0,1fr) 152px;gap:8px}
+      input,select {height:46px;padding:0 11px}
+      input {font-size:23px}
+      select {font-size:12px}
+      #reference {font-size:13px}
+      .categories {gap:6px}
+      .category {font-size:12px;min-height:40px}
+      .answer {border-radius:0 0 17px 17px;padding:18px 19px}
+      .answer-value {font-size:clamp(39px,9vw,53px)}
+      .answer-unit {font-size:18px}
+      .source {font-size:11px}
+      footer {padding-bottom:13px}
+    }
+    @media (max-width:365px) {
+      .amount-wrap {grid-template-columns:1fr}
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .category,.source summary::after {transition:none}
     }
   </style>
 </head>
@@ -135,12 +157,15 @@
       </div>
     </section>
 
-    <div class="source" aria-live="polite">
+    <details class="source">
+      <summary>Ver fuentes y metodología</summary>
+      <div class="source-content" aria-live="polite">
       <p class="source-header" id="source-value">Fuente de la referencia seleccionada</p>
       <p id="source-explanation">Las equivalencias se calculan con los importes documentados de cada referencia.</p>
       <p><a id="source-link" href="https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/Presupuestos/PGE/PGE2025Prorroga/Paginas/PGE2025Prorroga.aspx" target="_blank" rel="noopener noreferrer">Consultar fuente oficial</a></p>
       <p class="small-print">Las cifras son nominales del año señalado: pueden corresponder a reformas, complejos o compras de varias unidades. En las compras por lotes, el importe unitario es un promedio que puede incluir servicios adicionales. Los presupuestos de 2023 no son gasto ejecutado de 2026. Esta comparación no implica una reasignación de fondos.</p>
-    </div>
+      </div>
+    </details>
   </main>
   <footer>Equivale compara magnitudes. No equipara financiación pública y privada ni ajusta por inflación.</footer>
 
