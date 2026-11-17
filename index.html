@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="equivale-version" content="5.3">
+  <meta name="equivale-version" content="5.4">
   <meta name="theme-color" content="#f7f7f4">
   <meta name="description" content="Convierte cualquier cantidad en gasto público, edificios, bienes y eventos. Una cifra, una comparación.">
   <meta property="og:type" content="website">
@@ -148,6 +148,16 @@
     #panel-contacto #contact-send{background:var(--green);color:#fff;border-color:var(--green);padding:10px 18px}
     #panel-contacto #contact-send:hover{background:var(--green-2)}
     @media(max-width:699px){#panel-historico .chart-area{grid-template-columns:60px minmax(0,1fr)}#panel-historico .bar-col{flex-basis:100px;min-width:100px;width:100px}.hist-tick{font-size:9px;right:5px}}
+    /* v5.4 · Agrupación opcional de comparativas, sin alterar el catálogo. */
+    #panel-historico .historico-controls{grid-template-rows:auto 1fr}
+    #panel-historico .hist-stack-options{grid-column:1/3;grid-row:2;align-self:start;min-width:0;border:0;padding:0;margin:0}
+    #panel-historico .hist-stack-options legend{padding:0;margin-bottom:5px;color:var(--text);font-size:12px;font-weight:700}
+    #panel-historico .hist-stack-options .pick-item{padding:8px 8px;min-height:36px}
+    #panel-historico .historico-controls .fullrow{grid-column:3;grid-row:1/3}
+    #panel-historico .hist-stack-bar{display:flex;flex-direction:column-reverse;width:60%;overflow:hidden;border-radius:6px 6px 0 0;min-height:0}
+    #panel-historico .hist-stack-bar .bar{width:100%;border-radius:0;flex-shrink:0;min-height:0}
+    #panel-historico .hist-stack-bar .bar:not(:first-child){box-shadow:inset 0 -1px 0 rgba(255,255,255,.8)}
+    @media(max-width:820px){#panel-historico .historico-controls{grid-template-rows:auto}#panel-historico .hist-stack-options{grid-column:1/-1;grid-row:auto}#panel-historico .historico-controls .fullrow{grid-column:1/-1;grid-row:auto}}
   </style>
 </head>
 <body>
@@ -232,6 +242,11 @@
             <label class="mini-label" for="hist-year">Año</label>
             <select id="hist-year"></select>
           </div>
+          <fieldset class="hist-stack-options" aria-label="Opciones de apilado">
+            <legend>Opciones del gráfico</legend>
+            <label class="pick-item"><input type="checkbox" class="pick" id="hist-stack-year"><span class="pick-name">Apilar por año</span></label>
+            <label class="pick-item"><input type="checkbox" class="pick" id="hist-stack-category"><span class="pick-name">Apilar por categoría</span></label>
+          </fieldset>
           <div class="fullrow">
             <label class="mini-label" for="hist-search">Conceptos seleccionables</label>
             <input id="hist-search" type="search" placeholder="Buscar concepto o año…" aria-label="Buscar concepto o año" style="width:100%;margin-bottom:8px;font-size:13px;font-weight:500">
@@ -248,7 +263,7 @@
             <span><i class="dot green"></i> Edificios / inversiones</span>
             <span><i class="dot yellow"></i> Bienes y eventos</span>
           </div>
-          <p class="hist-note">* Ajustado por inflación española a octubre de 2026. Cifras de 2026 sin ajuste adicional. Se comparan magnitudes, no se suman; pueden representar recaudación, presupuesto, estimación, inversión, daños o coste por unidad. Solo se ofrecen los años con datos incorporados. Las cifras parciales se identifican expresamente; las fuentes de transcripción secundaria se señalan. Los presupuestos prorrogados no son ejecución ni presupuestos nuevos.</p>
+          <p class="hist-note">* Ajustado por inflación española a octubre de 2026. Cifras de 2026 sin ajuste adicional. Se comparan magnitudes. Al apilar, se muestra una suma aritmética de las cifras seleccionadas, no un total contable: puede haber solapamientos o doble cómputo. Las cifras pueden representar recaudación, presupuesto, estimación, inversión, daños o coste por unidad. Solo se ofrecen los años con datos incorporados. Las cifras parciales se identifican expresamente; las fuentes de transcripción secundaria se señalan. Los presupuestos prorrogados no son ejecución ni presupuestos nuevos.</p>
           <details id="hist-sources" class="hist-sources" hidden><summary>Fuentes de las comparativas seleccionadas</summary><div id="hist-source-list"></div></details>
           <p class="hist-note">IPC: <a href="https://ine.es/consul/serie.do?d=true&amp;s=IPC318623" target="_blank" rel="noopener noreferrer">media anual INE</a> · <a href="https://www.ine.es/consul/serie.do?L=0&amp;d=true&amp;s=IPC290751" target="_blank" rel="noopener noreferrer">octubre 2026</a> · <a href="https://econet.carm.es/inicio/-/crem/sicrem/pu_ipc/anual_25/sec5.html" target="_blank" rel="noopener noreferrer">serie desde 2002</a> · <a href="https://www.ine.es/prodyser/pubweb/anuario0203/0203condiciones.pdf" target="_blank" rel="noopener noreferrer">enlace 2001/02</a> · <a href="https://www.ine.es/prodyser/pubweb/anuario01/01condi.pdf" target="_blank" rel="noopener noreferrer">serie anterior</a>.</p>
         </div>
@@ -400,6 +415,18 @@
   document.getElementById('download-image').addEventListener('click',()=>{ const c=document.createElement('canvas'); c.width=1200; c.height=630; const ctx=c.getContext('2d'); ctx.fillStyle='#f7f7f4'; ctx.fillRect(0,0,c.width,c.height); ctx.fillStyle='#e7efe8'; ctx.beginPath(); ctx.arc(1100,100,240,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#2d765d'; ctx.globalAlpha=.85; ctx.beginPath(); ctx.arc(-20,620,190,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; ctx.fillStyle='#174a3d'; roundRect(ctx,60,62,76,76,20,true); ctx.fillStyle='#c9f178'; roundRect(ctx,84,88,30,10,5,true); roundRect(ctx,84,108,30,10,5,true); ctx.fillStyle='#192521'; ctx.font='700 54px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('equivale.',158,116); ctx.font='800 68px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('El coste de las cosas,',60,230); ctx.fillStyle='#2d765d'; ctx.fillText('en perspectiva.',60,300); ctx.fillStyle='#64726b'; ctx.font='400 28px ui-sans-serif, system-ui, sans-serif'; wrapText(ctx,'Convierte cualquier cantidad en gasto público, edificios, bienes y eventos.',60,382,560,38); ctx.fillStyle='#ffffff'; roundRect(ctx,710,170,430,330,34,true); ctx.fillStyle='#192521'; ctx.font='800 72px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(String(parseSpanishNumber(amountInput.value)||0).replace('.',','),760,270); ctx.fillStyle='#f3f5ef'; roundRect(ctx,925,218,170,54,27,true); ctx.fillStyle='#174a3d'; ctx.font='700 18px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(unitSelect.options[unitSelect.selectedIndex].text,948,252); ctx.fillStyle='#174a3d'; roundRect(ctx,730,298,390,170,32,true); ctx.fillStyle='#d6eadf'; ctx.font='500 20px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('Equivale aproximadamente a',766,340); ctx.fillStyle='#ffffff'; ctx.font='800 78px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(resultEl.textContent,760,422); ctx.font='700 26px ui-sans-serif, system-ui, sans-serif'; wrapText(ctx,resultUnitEl.textContent,925,390,160,32); ctx.font='600 16px ui-sans-serif, system-ui, sans-serif'; ctx.fillStyle='#d6eadf'; wrapText(ctx,breakdownEl.textContent,760,460,330,22); ctx.fillStyle='#64726b'; ctx.font='500 18px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('selfkingdom.github.io/equivale-web/',60,572); const a=document.createElement('a'); a.href=c.toDataURL('image/png'); a.download='equivale-resultado.png'; a.click(); setStatus('Imagen generada y descargada.'); });
   const histCategory=document.getElementById('hist-category'), histYear=document.getElementById('hist-year'), pickList=document.getElementById('pick-list'), chartArea=document.getElementById('chart-area'), chartEmpty=document.getElementById('chart-empty');
   const selectedBars=[];
+  const stackYear=document.getElementById('hist-stack-year'), stackCategory=document.getElementById('hist-stack-category');
+  // Ambas opciones desmarcadas: cada comparativa conserva su propia barra.
+  stackYear.checked=false;stackCategory.checked=false;
+  function groupedBars(){
+    const groups=new Map();
+    for(const item of selectedBars){
+      const key=JSON.stringify([stackYear.checked?item.point.anio:null,stackCategory.checked?item.key.split('|')[0]:null,!stackYear.checked&&!stackCategory.checked?item.key:null]);
+      if(!groups.has(key))groups.set(key,{items:[],total:0});
+      const group=groups.get(key);group.items.push(item);group.total+=item.value;
+    }
+    return [...groups.values()];
+  }
   const chartAxisTitle=document.getElementById('hist-axis-title'), histSources=document.getElementById('hist-sources'), histSourceList=document.getElementById('hist-source-list');
   const histNumber=new Intl.NumberFormat('es-ES',{maximumFractionDigits:6});
   function histMoney(n){return (n>0&&n<0.01?histNumber.format(n):esc.format(n))+' M€';}
@@ -414,13 +441,39 @@
     chartArea.replaceChildren();histSourceList.replaceChildren();
     const empty=!selectedBars.length;chartArea.hidden=empty;chartEmpty.hidden=!empty;chartAxisTitle.hidden=empty;histSources.hidden=empty;
     if(empty)return;
-    const max=Math.max(...selectedBars.map(x=>x.value));const rawStep=(max||1)/4;const magnitude=10**Math.floor(Math.log10(rawStep));const normalized=rawStep/magnitude;const step=[1,2,2.5,5,10].find(v=>v>=normalized)*magnitude;const axisMax=step*4;
+    const groups=groupedBars();const max=Math.max(...groups.map(x=>x.total));const rawStep=(max||1)/4;const magnitude=10**Math.floor(Math.log10(rawStep));const normalized=rawStep/magnitude;const step=[1,2,2.5,5,10].find(v=>v>=normalized)*magnitude;const axisMax=step*4;
     const axis=makeNode('div','hist-axis');for(let i=0;i<=4;i++){let tick=makeNode('div','hist-tick',histNumber.format(step*(4-i)));tick.style.top=`${i*25}%`;axis.append(tick);}
     const scroll=makeNode('div','hist-scroll'),columns=makeNode('div','hist-columns');
-    selectedBars.forEach(item=>{const col=makeNode('div','bar-col'),plot=makeNode('div','hist-plot'),bar=makeNode('div',`bar ${item.color}`);bar.style.height=`${100*item.value/axisMax}%`;bar.title=`${item.label}: ${histMoney(item.value)}${item.point.ajustado?' *':''}`;bar.setAttribute('aria-label',bar.title);plot.append(bar);col.append(plot,makeNode('div','bar-label',item.label),makeNode('div','bar-meta',histMoney(item.value)+(item.point.ajustado?' *':'')));columns.append(col);
+    groups.forEach(group=>{
+      const col=makeNode('div','bar-col'),plot=makeNode('div','hist-plot');
+      const stacked=group.items.length>1;
+      const label=group.items.map(item=>item.label).join(' + ');
+      const total=histMoney(group.total)+(group.items.some(item=>item.point.ajustado)?' *':'');
+      if(stacked){
+        const stack=makeNode('div','hist-stack-bar');
+        stack.style.height=`${100*group.total/axisMax}%`;
+        stack.setAttribute('role','group');stack.setAttribute('aria-label',`${label}: ${total}`);
+        group.items.forEach(item=>{
+          const bar=makeNode('div',`bar ${item.color}`);
+          bar.style.height=`${group.total?100*item.value/group.total:0}%`;
+          bar.title=`${item.label}: ${histMoney(item.value)}${item.point.ajustado?' *':''}`;
+          bar.setAttribute('role','img');bar.setAttribute('aria-label',bar.title);stack.append(bar);
+        });
+        plot.append(stack);
+      }else{
+        const item=group.items[0],bar=makeNode('div',`bar ${item.color}`);
+        bar.style.height=`${100*item.value/axisMax}%`;
+        bar.title=`${item.label}: ${histMoney(item.value)}${item.point.ajustado?' *':''}`;
+        bar.setAttribute('role','img');bar.setAttribute('aria-label',bar.title);plot.append(bar);
+      }
+      col.append(plot,makeNode('div','bar-label',label),makeNode('div','bar-meta',total));columns.append(col);
+    });
+    // Las fuentes se mantienen individualizadas aunque las barras se agrupen.
+    selectedBars.forEach(item=>{
       const p=makeNode('p');const strong=makeNode('strong','',item.label);p.append(strong,document.createElement('br'),document.createTextNode(`${item.point.tipo}. Original: ${histMoney(item.point.nominal)}. En euros de octubre de 2026: ${histMoney(item.value)}. ${item.point.nota||''} `));if(item.point.fuente){const a=makeNode('a','','Fuente de referencia');a.href=item.point.fuente;a.target='_blank';a.rel='noopener noreferrer';p.append(a);}if(item.point.fuenteSecundaria){const a2=makeNode("a",""," · Fuente complementaria");a2.href=item.point.fuenteSecundaria;a2.target="_blank";a2.rel="noopener noreferrer";p.append(a2);}histSourceList.append(p);
     });scroll.append(columns);chartArea.append(axis,scroll);
   }
+  stackYear.addEventListener('change',renderChart);stackCategory.addEventListener('change',renderChart);
   histCategory.addEventListener('change',populateHistYears);histYear.addEventListener('change',renderPickList);document.getElementById('hist-search').addEventListener('input',renderPickList);
   document.getElementById('contact-form').addEventListener('submit',(event)=>{ event.preventDefault(); const name=document.getElementById('contact-name').value.trim(); const email=document.getElementById('contact-email').value.trim(); const message=document.getElementById('contact-message').value.trim(); const subject=encodeURIComponent(`Sugerencia Equivale${name ? ' · '+name : ''}`); const body=encodeURIComponent(`Nombre: ${name || '-'}\nEmail: ${email || '-'}\n\nMensaje:\n${message || ''}`); window.location.href=`mailto:selfkingdom1@gmail.com?subject=${subject}&body=${body}`; });
   populateHistCategories(); setCategory('publico');
