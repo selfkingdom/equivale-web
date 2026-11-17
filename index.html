@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="equivale-version" content="4.1">
   <meta name="theme-color" content="#f7f7f4">
-  <meta name="description" content="Convierte cualquier cantidad en días de gasto público, edificios emblemáticos y artículos conocidos. Una cifra, una comparación.">
+  <meta name="description" content="Convierte cualquier cantidad en días de gasto público, edificios emblemáticos, artículos conocidos y eventos. Una cifra, una comparación.">
   <title>Equivale · El coste de las cosas, en perspectiva</title>
   <style>
     :root {
@@ -38,7 +39,7 @@
     select {font-size:14px;font-weight:650;padding-right:30px;cursor:pointer}
     input:focus,select:focus {outline:3px solid #a4d9b4;outline-offset:1px;border-color:var(--focus)}
     #reference {font-size:14px}
-    .categories {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:0 0 8px}
+    .categories {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 0 8px}
     .category {min-height:40px;background:#f8faf7;border:1.5px solid var(--border);border-radius:10px;color:var(--text);font:inherit;font-size:13px;font-weight:740;cursor:pointer;padding:7px;transition:background .15s,border-color .15s}
     .category:hover {border-color:#8fb49a}
     .category.active {background:var(--green);border-color:var(--green);color:#fff}
@@ -104,8 +105,82 @@
     @media (max-width:365px) {
       .amount-wrap {grid-template-columns:1fr}
     }
+    @media (max-width:420px) { .categories {gap:4px} .category {font-size:11px;padding:5px 2px;min-width:0} }
     @media (prefers-reduced-motion:reduce) {
       .category,.source summary::after {transition:none}
+    }
+    /* V3.2: distribución adaptada a la altura real de la ventana, sin ocultar contenido. */
+    body {min-height:100vh;min-height:100dvh}
+    .nav {min-height:54px}
+    main {padding:clamp(12px,2.6vh,26px) 0 5px}
+    .intro {margin-bottom:clamp(12px,2.2vh,20px)}
+    h1 {max-width:none;font-size:clamp(29px,4.2vw,43px);margin:6px auto 7px}
+    .intro p {max-width:700px;font-size:13px;line-height:1.4}
+    .calculator {padding:clamp(15px,2.5vh,22px) 24px}
+    .field + .field {margin-top:13px}
+    .field-label {margin-bottom:6px}
+    input,select {height:45px}
+    .category {min-height:39px}
+    .categories {margin-bottom:7px}
+    .answer {padding:clamp(16px,2.5vh,24px) 27px}
+    .answer-value {font-size:clamp(43px,6.2vw,58px);overflow-wrap:anywhere}
+    .answer-unit {font-size:clamp(18px,2.4vw,23px);line-height:1.2;letter-spacing:-.035em}
+    .answer-detail {margin-top:7px;overflow-wrap:anywhere}
+    .source {padding-top:5px}
+    footer {padding:5px 16px 8px}
+    @media (min-width:700px) and (max-height:650px) {
+      .nav {min-height:46px}
+      main {padding-top:10px}
+      .intro {margin-bottom:11px}
+      h1 {font-size:clamp(29px,3.8vw,37px);margin:4px auto 5px}
+      .calculator {padding:12px 22px}
+      .field + .field {margin-top:10px}
+      input,select {height:40px}
+      .category {min-height:35px;padding:5px}
+      .answer {padding:12px 23px}
+      .answer-value {font-size:47px}
+      .answer-detail {margin-top:5px}
+      .source {padding-top:2px}
+      footer {padding-bottom:4px}
+    }
+    @media (min-width:700px) and (max-height:510px) {
+      .eyebrow {display:none}
+      .nav {min-height:41px}
+      main {padding-top:8px}
+      h1 {font-size:30px}
+      .intro {margin-bottom:8px}
+      .calculator {padding:9px 20px}
+      .field + .field {margin-top:8px}
+      .answer {padding:9px 22px}
+      .answer-value {font-size:40px}
+    }
+    @media (max-width:699px) {
+      .nav {min-height:50px}
+      main {padding:16px 0 6px}
+      .intro {margin-bottom:13px}
+      h1 {font-size:clamp(29px,7vw,39px);margin:6px auto 7px}
+      .calculator {padding:15px 17px}
+      .field + .field {margin-top:12px}
+      input,select {height:44px}
+      .category {min-height:40px}
+      .answer {padding:15px 19px}
+      .answer-value {font-size:clamp(39px,9vw,53px);line-height:1.08}
+      .answer-unit {font-size:18px}
+    }
+    @media (min-width:700px) {
+      .amount-wrap {grid-template-columns:minmax(0,1fr) 245px}
+    }
+    @media (max-width:699px) and (max-height:740px) {
+      .nav {min-height:45px}
+      main {padding-top:10px}
+      .intro {margin-bottom:10px}
+      .intro h1 {font-size:clamp(28px,7vw,34px)}
+      .calculator {padding:12px 15px}
+      .field + .field {margin-top:10px}
+      .answer {padding:12px 16px}
+      .answer-detail {margin-top:5px}
+      .source {padding-top:3px}
+      footer {padding:3px 12px 5px}
     }
   </style>
 </head>
@@ -121,7 +196,7 @@
     <section class="intro">
       <div class="eyebrow">El coste de las cosas</div>
       <h1>El coste de las cosas, <em>en perspectiva.</em></h1>
-      <p>Introduce un importe y descubre a qué equivale en gasto público, edificios y artículos conocidos.</p>
+      <p>Introduce un importe y descubre a qué equivale en gasto público, edificios, artículos y eventos.</p>
     </section>
 
     <section aria-label="Calculadora de equivalencias">
@@ -145,6 +220,7 @@
             <button type="button" class="category active" data-category="publico" aria-pressed="true">Gasto público</button>
             <button type="button" class="category" data-category="edificios" aria-pressed="false">Edificios</button>
             <button type="button" class="category" data-category="articulos" aria-pressed="false">Artículos</button>
+            <button type="button" class="category" data-category="eventos" aria-pressed="false">Eventos</button>
           </div>
           <select id="reference" name="reference" aria-label="Referencia de comparación"></select>
         </div>
@@ -162,12 +238,14 @@
       <div class="source-content" aria-live="polite">
       <p class="source-header" id="source-value">Fuente de la referencia seleccionada</p>
       <p id="source-explanation">Las equivalencias se calculan con los importes documentados de cada referencia.</p>
-      <p><a id="source-link" href="https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/Presupuestos/PGE/PGE2025Prorroga/Paginas/PGE2025Prorroga.aspx" target="_blank" rel="noopener noreferrer">Consultar fuente oficial</a></p>
-      <p class="small-print">Las cifras son nominales del año señalado: pueden corresponder a reformas, complejos o compras de varias unidades. En las compras por lotes, el importe unitario es un promedio que puede incluir servicios adicionales. Los presupuestos de 2023 no son gasto ejecutado de 2026. Esta comparación no implica una reasignación de fondos.</p>
+      <p><a id="source-link" href="https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/Presupuestos/PGE/PGE2025Prorroga/Paginas/PGE2025Prorroga.aspx" target="_blank" rel="noopener noreferrer">Consultar fuente de referencia</a></p>
+      <p id="fx-source" hidden><a id="fx-link" target="_blank" rel="noopener noreferrer">Consultar tipo de cambio histórico</a></p>
+      <p id="inflation-source" hidden><a href="https://ine.es/consul/serie.do?d=true&amp;s=IPC318623" target="_blank" rel="noopener noreferrer">IPC histórico (INE)</a> · <a href="https://www.ine.es/dynt3/FMI/" target="_blank" rel="noopener noreferrer">IPC de octubre de 2026 (INE)</a> · <a href="https://econet.carm.es/inicio/-/crem/sicrem/pu_ipc/anual_25/sec5.html" target="_blank" rel="noopener noreferrer">Serie histórica ampliada</a> · <a href="https://www.ine.es/prodyser/pubweb/anuario0203/0203condiciones.pdf" target="_blank" rel="noopener noreferrer">Enlace de 2001 a 2002 (INE)</a></p>
+      <p class="small-print">Salvo las referencias marcadas con *, las cifras son nominales del año señalado: pueden corresponder a reformas, complejos o compras de varias unidades. En las compras por lotes, el importe unitario es un promedio que puede incluir servicios adicionales. Los presupuestos de 2023 no son gasto ejecutado de 2026. Los eventos pueden representar daños, costes de organización o presupuestos, no conceptos intercambiables. En eventos, las divisas se convierten al tipo medio del año del evento y luego se actualizan por el IPC general español (media del año de referencia hasta octubre de 2026). Es una aproximación al poder adquisitivo del euro en España, no una estimación actual de daños ni de costes de reconstrucción. Las demás categorías conservan sus cifras nominales. Esta comparación no implica una reasignación de fondos.</p>
       </div>
     </details>
   </main>
-  <footer>Equivale compara magnitudes. No equipara financiación pública y privada ni ajusta por inflación.</footer>
+  <footer>Equivale compara magnitudes. No equipara financiación pública y privada. * Ajustado por inflación cuando se indica.</footer>
 
   <script>
     'use strict';
@@ -228,18 +306,29 @@
     // Un promedio por lote NO representa necesariamente el precio aislado de una unidad.
     const ARTICULOS = Object.freeze({
       eurofighter: { nombre:'aviones Eurofighter', selector:'Avión Eurofighter (programa Halcón I)', coste:2_043_000_000/20, anio:'2022', tipo:'media de contrato de 20 unidades', fuente:'https://www.airbus.com/en/newsroom/press-releases/2022-06-spain-orders-20-eurofighter-jets-under-landmark-contract-to', nota:'2.043 M€ / 20 aviones. El contrato también incluye motores, simulador y servicios de apoyo: NO es el precio de fabricación aislado de un caza.' },
-      f100: { nombre:'fragatas F-100', selector:'Fragata F-100 Álvaro de Bazán', coste:1_682_000_000/4, anio:'2002', tipo:'media del programa original de cuatro', fuente:'https://www.servimedia.es/noticias/aznar-preside-laentrega-armada-primera-fragatas-f-100-construye-izar/1411123531', nota:'Unos 1.682 M€ por las primeras cuatro fragatas F-100, incluyendo sistemas de combate y apoyo asociados. Precio nominal de comienzos de los 2000, no actualizado por inflación.' },
       f110: { nombre:'fragatas F-110', selector:'Fragata F-110 (nueva generación)', coste:4_325_000_000/5, anio:'2019', tipo:'media del programa de cinco', fuente:'https://www.navantia.es/es/actualidad/notas-prensa/navantia-bota-ferrol-primera-fragata-f110-armada-reina-sofia-madrina/', nota:'4.325 M€ / cinco fragatas del programa. Es promedio por unidad de programa, no precio de venta separado de cada buque.' },
       submarino: { nombre:'submarinos S-80', selector:'Submarino S-80 (clase Isaac Peral)', coste:4_339_000_000/4, anio:'2025', tipo:'media del programa de cuatro', fuente:'https://www.infodefensa.com/texto-diario/mostrar/5714568/defensa-invierte-432-millones-mas-submarinos-s-80-armada-eleva-presupuesto-4339-millones', nota:'Presupuesto del programa de cuatro submarinos a finales de 2025, incluyendo formación, repuestos y apoyos. No es un precio de construcción aislado ni incorpora futuras ampliaciones.' },
-      dhc515: { nombre:'aviones apagafuegos DHC-515', selector:'Avión apagafuegos DHC-515', coste:375_561_223.07/7, anio:'2024', tipo:'media de adquisición de siete', fuente:'https://www.lamoncloa.gob.es/consejodeministros/referencias/paginas/2024/20240604-referencia-rueda-de-prensa-ministros.aspx', nota:'375,56 M€ estimados para adquirir siete aviones anfibios. Se divide el paquete entre siete, sin considerar actualizaciones futuras de la flota existente.' },
       ave: { nombre:'trenes Talgo Avril', selector:'Tren de alta velocidad Talgo Avril', coste:337_500_000/15, anio:'2016', tipo:'media de fabricación por tren', fuente:'https://www.rtve.es/noticias/20161128/talgo-se-lleva-megacontrato-renfe-con-2642-millones-para-alta-velocidad/1447735.shtml', nota:'Fabricación de los primeros 15 trenes: 337,5 M€ / 15. Excluye expresamente el mantenimiento de 30 años (448,9 M€) para no inflar el precio unitario.' },
-      h135: { nombre:'helicópteros Airbus H135', selector:'Helicóptero Airbus H135', coste:310_000_000/36, anio:'2021', tipo:'media del contrato de 36', fuente:'https://www.europapress.es/nacional/noticia-gobierno-autoriza-compra-36-helicopteros-ligeros-defensa-interior-310-millones-euros-20211108185106.html', nota:'Contrato conjunto de 36 helicópteros para Interior y Defensa, con elementos para entrada en servicio. Promedio orientativo, no precio en catálogo.' },
       bugatti: { nombre:'Bugatti Tourbillon', selector:'Coche Bugatti Tourbillon', coste:3_800_000, anio:'2026', tipo:'precio base de catálogo sin impuestos', fuente:'https://newsroom.bugatti.com/en/press-releases/the-bugatti-tourbillon-an-automotive-icon-pour-leternite', nota:'Precio anunciado por Bugatti: desde 3,8 M€ antes de impuestos y opciones. El precio final con IVA y personalización puede ser mayor.' },
       resonancia: { nombre:'equipos de resonancia magnética', selector:'Equipo de resonancia magnética hospitalaria', coste:1_481_098.45, anio:'2025', tipo:'adjudicación de un equipo instalado', fuente:'https://gd.aragon.es/cgi-bin/CONT/BRSCGI?BASE=CONT&CMD=VERLST&SEC=CONT_PUBL&SORT=-EJER&docs=6601-6700', nota:'Adjudicación de 2025 de un equipo para el hospital de Teruel. Incluye suministro, obra, instalación, puesta en marcha y legalización; importe sin IVA.' },
-      autobus: { nombre:'autobuses eléctricos urbanos', selector:'Autobús eléctrico Irizar ieBus (EMT Madrid)', coste:30_750_000/50, anio:'2026', tipo:'media de adjudicación de 50', fuente:'https://www.emtmadrid.es/Noticias/El-Ayuntamiento-incorporara-a-la-flota-de-EMT-Madr.aspx', nota:'Adjudicación de hasta 30,75 M€ sin IVA para 50 autobuses Irizar ieBus en Madrid: 615.000 € por unidad. No incluye infraestructura de recarga.' }
+      casa: {"nombre":"viviendas de 350.000 €","selector":"Vivienda de 350.000 €","coste":350000,"anio":"2026","tipo":"precio hipotético","fuente":null,"nota":"Importe ilustrativo elegido como referencia por Equivale. No es el precio medio de la vivienda en España y excluye impuestos y gastos de compra."},
+      ambulancia: {"nombre":"ambulancias de soporte vital avanzado","selector":"Ambulancia de soporte vital avanzado","coste":125490,"anio":"2024","tipo":"coste de adquisición sin IVA","fuente":"https://www.europapress.es/navarra/noticia-servicio-bomberos-incorpora-nueva-ambulancia-soporte-vital-avanzado-20240701174049.html","nota":"Vehículo adquirido por el Gobierno de Navarra para Bomberos de Trinitarios, 125.490 € más IVA. No incluye explotación ni personal."},
+      corolla: {"nombre":"Toyota Corolla","selector":"Toyota Corolla híbrido (5 puertas)","coste":25450,"anio":"2026","tipo":"precio anunciado desde","fuente":"https://prensa.toyota.es/la-gama-toyota-corolla-refuerza-su-oferta-para-celebrar-su-60-aniversario-con-una-edicion-especial-el-regreso-de-style-y-una-mayor-presencia-de-gr-sport/","nota":"Precio desde 25.450 € anunciado por Toyota España en 2026 para el Corolla de cinco puertas; puede depender de condiciones comerciales."},
+      iphone: {"nombre":"iPhone 17","selector":"iPhone 17 (256 GB)","coste":959,"anio":"2025","tipo":"precio de lanzamiento en España","fuente":"https://www.apple.com/es/newsroom/2025/09/apple-introduces-iphone-17/","nota":"Precio de lanzamiento anunciado por Apple España en septiembre de 2025. No es una cotización actual ni incluye accesorios."}
     });
 
-    const CATALOGOS = Object.freeze({ publico: PARTIDAS, edificios: EDIFICIOS, articulos: ARTICULOS });
+    const EVENTOS = Object.freeze({
+      dana: {"nombre":"los daños de la DANA de Valencia","selector":"DANA de Valencia (2024)","coste":19610378739.232212,"anio":"2024","tipo":"daños directos estimados","fuente":"https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX%3A52026DC0323","nota":"La Comisión Europea aceptó unos 18.078,315 M€ como daño directo total verosímil. No equivale a ayudas concedidas ni a pérdidas indirectas. Para el ajuste se toma el año del evento o de finalización como aproximación, al no disponer de una distribución de costes por año ni de un año de precios explícito para todo el importe.","anioIPC":2024,"ipcBase":97.397,"costeOriginal":18078315000},
+      onceS: {"nombre":"los daños materiales del 11S","selector":"Atentados del 11S (2001)","coste":43974042225.201065,"anio":"2001","tipo":"daños materiales e infraestructuras estimados","fuente":"https://www.newyorkfed.org/research/epr/02v08n2/0211rapa","nota":"La Reserva Federal de Nueva York estimó en 21.600 millones de USD la reparación y sustitución de capital físico e infraestructuras dañadas en Nueva York. Excluye pérdidas de ingresos y consecuencias económicas más amplias. Cambio medio de 2001: 0,8952 USD/EUR. Para el IPC de 2001 se enlaza la media de 2002 (60,0, redondeada) con la variación media de 2002 (+3,5 %).","fx":"https://fred.stlouisfed.org/data/AEXUSEU","anioIPC":2001,"ipcBase":57.971014492753625,"costeOriginal":24128686327.077747},
+      paris: {"nombre":"el gasto público de París 2024","selector":"JJ. OO. y Paralímpicos de París (2024)","coste":7214211326.837582,"anio":"2024","tipo":"gasto público bruto estimado","fuente":"https://www.senat.fr/rap/l25-139-330/l25-139-330_mono.html","nota":"Según la Cour des comptes, recogida por el Senado francés: 3.019,2 M€ en organización y 3.631,4 M€ en infraestructuras. Balance publicado en 2025. No incluye toda la financiación privada ni descuenta ingresos. Para el ajuste se toma el año del evento o de finalización como aproximación, al no disponer de una distribución de costes por año ni de un año de precios explícito para todo el importe.","anioIPC":2024,"ipcBase":97.397,"costeOriginal":6650600000},
+      qatar: {"nombre":"el coste de los estadios de Qatar 2022","selector":"Mundial de Qatar (2022 · estadios)","coste":7122151595.171172,"anio":"2022","tipo":"coste estimado de construcción de estadios","fuente":"https://www.elibrary.imf.org/view/journals/002/2024/044/article-A002-en.xml","nota":"El FMI recoge una estimación de 6.500 millones de USD para los estadios, no el coste total del Mundial ni el conjunto de inversiones del país. Cambio medio de 2022: 1,0534 USD/EUR. Para el ajuste se toma el año del evento o de finalización como aproximación, al no disponer de una distribución de costes por año ni de un año de precios explícito para todo el importe.","fx":"https://fred.stlouisfed.org/data/AEXUSEU","anioIPC":2022,"ipcBase":91.534,"costeOriginal":6170495538.257073},
+      turquia: {"nombre":"los daños del terremoto de Turquía","selector":"Terremoto de Turquía (2023)","coste":35247731624.598816,"anio":"2023","tipo":"daños físicos directos estimados","fuente":"https://www.worldbank.org/en/news/press-release/2023/02/27/earthquake-damage-in-turkiye-estimated-to-exceed-34-billion-world-bank-disaster-assessment-report","nota":"Banco Mundial: estimación inicial de 34.200 millones USD de daños físicos directos en Turquía. Excluye Siria y pérdidas indirectas. Cambio medio de 2023: 1,0817 USD/EUR.","fx":"https://fred.stlouisfed.org/data/AEXUSEU","anioIPC":2023,"ipcBase":94.768,"costeOriginal":31616899325.136356},
+      lapalma: {"nombre":"los daños del volcán de La Palma","selector":"Erupción volcánica de La Palma (2021)","coste":1251077586.2068965,"anio":"2021","tipo":"valoración aproximada de pérdidas y daños","fuente":"https://www.lamoncloa.gob.es/lang/en/gobierno/news/Paginas/2024/20240202_aid-to-la-palma.aspx","nota":"En febrero de 2024 La Moncloa situó la valoración total de daños y pérdidas en cerca de 1.000 M€. No equivale al importe de las ayudas. Para el ajuste se toma el año del evento o de finalización como aproximación, al no disponer de una distribución de costes por año ni de un año de precios explícito para todo el importe.","anioIPC":2021,"ipcBase":84.448,"costeOriginal":1000000000},
+      notredame: {"nombre":"el presupuesto de reconstrucción de Notre-Dame","selector":"Reconstrucción de Notre-Dame (2019–2024)","coste":777762836.6376787,"anio":"2019–2024","tipo":"presupuesto de las dos primeras fases","fuente":"https://ccomptes.fr/sites/default/files/2025-09/20250903-synthese-Chantier-cathedrale-Notre-Dame-de-Paris.pdf","nota":"Según la Cour des comptes: 165 M€ de aseguramiento y consolidación y 552 M€ de restauración hasta la reapertura. Son presupuestos, no liquidación final; excluye la tercera fase. Para el ajuste se toma el año del evento o de finalización como aproximación, al no disponer de una distribución de costes por año ni de un año de precios explícito para todo el importe.","anioIPC":2024,"ipcBase":97.397,"costeOriginal":717000000},
+      eurocopa: {"nombre":"el coste de organización de la Eurocopa 2024","selector":"Eurocopa de Alemania (2024)","coste":681003499.0810804,"anio":"2024","tipo":"coste de competición contabilizado por UEFA","fuente":"https://editorial.uefa.com/resources/0295-1cee154c3733-a7de3ba62d06-1000/uefa_financial_report_23-24_.pdf","nota":"Informe financiero UEFA 2023/24: 627,8 M€ de costes de competición, incluidos sedes, producción, personal y transporte. No equivale al gasto público alemán.","anioIPC":2024,"ipcBase":97.397,"costeOriginal":627800000}
+    });
+
+    const CATALOGOS = Object.freeze({ publico: PARTIDAS, edificios: EDIFICIOS, articulos: ARTICULOS, eventos: EVENTOS });
     const amountInput = document.querySelector('#amount');
     const unitSelect = document.querySelector('#unit');
     const referenceSelect = document.querySelector('#reference');
@@ -304,7 +393,7 @@
       Object.entries(CATALOGOS[next]).forEach(([id, ref]) => {
         const option = document.createElement('option');
         option.value = id;
-        option.textContent = ref.selector || ref.nombre.charAt(0).toUpperCase() + ref.nombre.slice(1);
+        option.textContent = (ref.selector || ref.nombre.charAt(0).toUpperCase() + ref.nombre.slice(1)) + (ref.costeOriginal ? ' *' : '');
         referenceSelect.append(option);
       });
       render();
@@ -318,15 +407,21 @@
       const valid = Number.isFinite(amount) && Number.isFinite(euros);
       errorEl.classList.toggle('show', !valid);
       amountInput.setAttribute('aria-invalid', valid ? 'false' : 'true');
-      sourceLink.href = ref.fuente;
-      sourceExplanation.textContent = ref.nota;
+      sourceLink.parentElement.hidden = !ref.fuente;
+      if (ref.fuente) sourceLink.href = ref.fuente;
+      else sourceLink.removeAttribute('href');
+      document.querySelector('#fx-source').hidden = !ref.fx;
+      const fxLink = document.querySelector('#fx-link');
+      if (ref.fx) fxLink.href = ref.fx; else fxLink.removeAttribute('href');
+      document.querySelector('#inflation-source').hidden = !ref.costeOriginal;
+      sourceExplanation.textContent = ref.nota + (ref.costeOriginal ? ` Importe histórico: ${compact.format(ref.costeOriginal / 1_000_000)} millones de euros. Ajuste: IPC general español (${ref.anioIPC} → octubre de 2026), factor ${compact.format(105.651/ref.ipcBase)}.` : '');
       if (category === 'publico') {
         sourceValue.textContent = `Referencia: ${ref.tipo} (${ref.anio}) · ${compact.format(ref.anual / 1_000_000)} millones €/año`;
         unitEl.textContent = `días de ${ref.nombre}`;
       } else {
-        const precio = `${compact.format(ref.coste)} €`;
-        sourceValue.textContent = `Referencia: ${ref.tipo} (${ref.anio}) · ${precio} por equivalencia`;
-        unitEl.textContent = ref.nombre;
+        const precio = `${compact.format(ref.coste)} €${ref.costeOriginal ? ' *' : ''}`;
+        sourceValue.textContent = `Referencia: ${ref.tipo} (${ref.anio}) · ${precio}${category === 'eventos' ? '' : ' por equivalencia'}`;
+        unitEl.textContent = category === 'eventos' ? `veces ${ref.nombre}${ref.costeOriginal ? " *" : ""}` : ref.nombre;
       }
       if (!valid) {
         numberEl.textContent = '—';
@@ -337,8 +432,13 @@
       numberEl.textContent = result > 0 && result < 0.005 ? '<0,01' : spanish.format(result);
       if (category === 'publico') {
         detailEl.textContent = humanDuration(result);
+      } else if (category === 'eventos') {
+        const pct = result * 100;
+        const pctText = pct > 0 && pct < 0.005 ? '<0,01' : compact.format(pct);
+        detailEl.textContent = `${pctText} % de la cifra de referencia · ${compact.format(ref.coste / 1_000_000)} M€ · * Ajustado por inflación (oct. 2026).`;
       } else {
-        detailEl.textContent = `Coste de referencia: ${compact.format(ref.coste / 1_000_000)} millones de euros por unidad.`;
+        const price = ref.coste >= 1_000_000 ? `${compact.format(ref.coste / 1_000_000)} millones de euros` : `${compact.format(ref.coste)} euros`;
+        detailEl.textContent = `Coste de referencia: ${price} por unidad.`;
       }
     }
 
