@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="equivale-version" content="5.1">
+  <meta name="equivale-version" content="5.2">
   <meta name="theme-color" content="#f7f7f4">
   <meta name="description" content="Convierte cualquier cantidad en gasto público, edificios, bienes y eventos. Una cifra, una comparación.">
   <meta property="og:type" content="website">
@@ -122,6 +122,30 @@
     @media (max-width:820px){.historico-controls{grid-template-columns:1fr 1fr}.historico-controls .fullrow{grid-column:1/-1}}
     @media (max-width:699px){.shell{width:min(920px,calc(100% - 24px))}.nav{min-height:51px}.nav-tag{font-size:10px}.intro p{font-size:13px}.amount-wrap{grid-template-columns:minmax(0,1fr) 154px;gap:8px}.calculator,.historico-wrap,.contact-wrap{padding:15px 16px 0}.historico-wrap,.contact-wrap{padding-bottom:16px}.categories{grid-template-columns:repeat(2,minmax(0,1fr))}.top-tabs{grid-template-columns:1fr}.historico-controls,.contact-grid{grid-template-columns:1fr}.contact-grid .full{grid-column:auto}.chart-area{min-height:260px}.bar-col{min-width:92px;flex-basis:92px}.bar{width:66px}}
     @media (max-width:365px){.amount-wrap{grid-template-columns:1fr}}
+
+    /* v5.2 · Histórico: eje lineal común, sin altura mínima artificial. */
+    #panel-historico [hidden]{display:none!important}
+    #panel-historico .chart-area{display:grid;grid-template-columns:76px minmax(0,1fr);gap:0;min-height:0;align-items:start;border:0;padding:8px 0 0;overflow:visible}
+    .hist-axis-title{font-size:11px;font-weight:700;color:var(--muted);padding-left:8px}
+    .hist-axis{height:240px;position:relative;border-right:1px solid var(--border);font-size:10px;color:var(--muted)}
+    .hist-tick{position:absolute;right:8px;transform:translateY(-50%);white-space:nowrap;line-height:1}
+    .hist-scroll{overflow-x:auto;min-width:0;padding-bottom:8px}
+    .hist-columns{display:flex;min-width:max-content;gap:0;align-items:start}
+    #panel-historico .bar-col{display:block;flex:1 0 122px;width:122px;min-width:122px;gap:0;text-align:center}
+    .hist-plot{height:240px;position:relative;display:flex;justify-content:center;align-items:end;border-bottom:1px solid #a8b4a9;background:repeating-linear-gradient(to top,transparent 0,transparent 59px,#e5eae5 59px,#e5eae5 60px)}
+    #panel-historico .bar{width:60%;border-radius:6px 6px 0 0;padding:0;display:block;min-height:0;box-shadow:none}
+    #panel-historico .bar-label{font-size:11px;line-height:1.3;margin:8px 4px 4px;overflow-wrap:anywhere}
+    #panel-historico .bar-meta{font-size:11px;font-weight:750;color:var(--text);padding:0 4px 3px;overflow-wrap:anywhere}
+    .hist-note{font-size:11px;color:var(--muted);line-height:1.45;margin:10px 0 0}
+    .hist-sources{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.45}
+    .hist-sources summary{font-weight:700;color:var(--green);cursor:pointer}
+    .hist-sources p{margin:10px 0;padding-top:8px;border-top:1px solid var(--border)}
+    #panel-historico .pick-list{max-height:236px}
+    #panel-historico .pick{flex-shrink:0;padding:0}
+    #panel-historico .pick-name{overflow-wrap:anywhere}
+    #panel-contacto #contact-send{background:var(--green);color:#fff;border-color:var(--green);padding:10px 18px}
+    #panel-contacto #contact-send:hover{background:var(--green-2)}
+    @media(max-width:699px){#panel-historico .chart-area{grid-template-columns:60px minmax(0,1fr)}#panel-historico .bar-col{flex-basis:100px;min-width:100px;width:100px}.hist-tick{font-size:9px;right:5px}}
   </style>
 </head>
 <body>
@@ -213,13 +237,17 @@
         </div>
         <div class="chart-wrap">
           <div id="chart-empty" class="chart-empty">El gráfico está vacío. Marca comparativas para empezar.</div>
+          <div id="hist-axis-title" class="hist-axis-title" hidden>Millones de euros · precios de octubre de 2026</div>
           <div id="chart-area" class="chart-area" hidden></div>
           <div class="legend">
             <span><i class="dot red"></i> Impuestos</span>
             <span><i class="dot blue"></i> Gasto público</span>
-            <span><i class="dot green"></i> Bienes / edificios / inversión</span>
-            <span><i class="dot yellow"></i> Eventos</span>
+            <span><i class="dot green"></i> Edificios / inversiones</span>
+            <span><i class="dot yellow"></i> Bienes y eventos</span>
           </div>
+          <p class="hist-note">* Ajustado por inflación española a octubre de 2026. Cifras de 2026 sin ajuste adicional. Se comparan magnitudes, no se suman; pueden representar recaudación, presupuesto, estimación, inversión, daños o coste por unidad. Solo se ofrecen los años con datos incorporados.</p>
+          <details id="hist-sources" class="hist-sources" hidden><summary>Fuentes de las comparativas seleccionadas</summary><div id="hist-source-list"></div></details>
+          <p class="hist-note">IPC: <a href="https://ine.es/consul/serie.do?d=true&amp;s=IPC318623" target="_blank" rel="noopener noreferrer">media anual INE</a> · <a href="https://www.ine.es/consul/serie.do?L=0&amp;d=true&amp;s=IPC290751" target="_blank" rel="noopener noreferrer">octubre 2026</a> · <a href="https://econet.carm.es/inicio/-/crem/sicrem/pu_ipc/anual_25/sec5.html" target="_blank" rel="noopener noreferrer">serie desde 2002</a> · <a href="https://www.ine.es/prodyser/pubweb/anuario0203/0203condiciones.pdf" target="_blank" rel="noopener noreferrer">enlace 2001/02</a> · <a href="https://www.ine.es/prodyser/pubweb/anuario01/01condi.pdf" target="_blank" rel="noopener noreferrer">serie anterior</a>.</p>
         </div>
       </div>
     </section>
@@ -228,25 +256,25 @@
       <div class="card contact-wrap">
         <h2 class="section-title">Contacto</h2>
         <p class="section-sub">Puedes enviar una sugerencia, corrección o propuesta de nueva comparativa.</p>
-        <div class="contact-grid">
+        <form id="contact-form"><div class="contact-grid">
           <div>
             <label class="mini-label" for="contact-name">Nombre</label>
             <input id="contact-name" type="text" placeholder="Tu nombre">
           </div>
           <div>
             <label class="mini-label" for="contact-email">Email</label>
-            <input id="contact-email" type="email" placeholder="tu@email.com">
+            <input id="contact-email" type="email" autocomplete="email" placeholder="tu@email.com">
           </div>
           <div class="full">
             <label class="mini-label" for="contact-message">Mensaje</label>
-            <textarea id="contact-message" placeholder="Cuéntanos tu sugerencia"></textarea>
+            <textarea id="contact-message" required maxlength="3000" placeholder="Cuéntanos tu sugerencia"></textarea>
           </div>
         </div>
         <div class="contact-actions">
-          <button type="button" class="small-btn" id="contact-send">Enviar sugerencia</button>
-          <a class="small-btn" style="text-decoration:none;display:inline-flex;align-items:center" href="mailto:selfkingdom1@gmail.com">Abrir email directo</a>
+          <button type="submit" class="small-btn" id="contact-send">Enviar sugerencia</button>
         </div>
-        <p class="contact-note">Correo de destino: <strong>selfkingdom1@gmail.com</strong>.</p>
+        <p class="contact-note">Al enviar, se abrirá tu aplicación de correo con el mensaje preparado para que puedas confirmar el envío.</p>
+        </form>
       </div>
     </section>
   </main>
@@ -305,11 +333,36 @@
     eurocopa:{ nombre:'la Eurocopa de Alemania', selector:'Eurocopa de Alemania (2024)', coste:681_000_000, anio:'2024', tipo:'coste de organización ajustado por inflación', fuente:'https://editorial.uefa.com/resources/0295-1cee154c3733-a7de3ba62d06-1000/uefa_financial_report_23-24_.pdf', nota:'Coste de competición contabilizado por UEFA.', ajustado:true }
   });
   const CATALOGOS = Object.freeze({ publico: PARTIDAS, edificios: EDIFICIOS, bienes: BIENES, eventos: EVENTOS });
-  const HISTORICO = {
-    impuestos:{ color:'red', label:'Impuestos', series:{ iva:{ nombre:'Recaudación por IVA', puntos:[{anio:'2022',valor:82595},{anio:'2023',valor:84073},{anio:'2024',valor:90541}] }, irpf:{ nombre:'Recaudación por IRPF', puntos:[{anio:'2022',valor:109485},{anio:'2023',valor:120280},{anio:'2024',valor:129408}] }, sociedades:{ nombre:'Recaudación por Impuesto sobre Sociedades', puntos:[{anio:'2022',valor:32176},{anio:'2023',valor:39067},{anio:'2024',valor:39096}] } } },
-    publico:{ color:'blue', label:'Gasto público', series:{ pensiones:{ nombre:'Pensiones contributivas', puntos:[{anio:'2026',valor:(14_540_000_000*14)/1_000_000}] }, desempleo:{ nombre:'Prestaciones por desempleo', puntos:[{anio:'2023',valor:21278.02}] }, imv:{ nombre:'Ingreso mínimo vital y prestaciones familiares', puntos:[{anio:'2023',valor:4193.13}] }, dependencia:{ nombre:'Atención a la dependencia', puntos:[{anio:'2023',valor:3522.30}] }, vivienda:{ nombre:'Vivienda y rehabilitación', puntos:[{anio:'2023',valor:3471.61}] } } },
-    bienes:{ color:'green', label:'Bienes / inversión', series:{ vivienda:{ nombre:'Vivienda tipo', puntos:[{anio:'2026',valor:0.35}] }, a350:{ nombre:'Airbus A350-900', puntos:[{anio:'2018',valor:292}] }, starship:{ nombre:'Starship de SpaceX', puntos:[{anio:'2024',valor:83}] }, eurofighter:{ nombre:'Avión Eurofighter', puntos:[{anio:'2022',valor:102.15}] }, bernabeu:{ nombre:'Reforma del Bernabéu', puntos:[{anio:'2026',valor:1407.7}] } } },
-    eventos:{ color:'yellow', label:'Eventos', series:{ paris:{ nombre:'JJ. OO. de París', puntos:[{anio:'2024',valor:7214}] }, dana:{ nombre:'DANA de Valencia', puntos:[{anio:'2024',valor:19610}] }, onceS:{ nombre:'Daños del 11S', puntos:[{anio:'2001',valor:43974}] }, lapalma:{ nombre:'Volcán de La Palma', puntos:[{anio:'2021',valor:1251}] } } }
+  // El histórico se nutre del catálogo del conversor: una referencia añadida a CATALOGOS
+  // aparece también aquí, sin duplicar las cifras. Las cinco fichas recuperadas de v4.1 son solo históricas.
+  const HIST_LEGACY = {publico:{no_contributivas:{nombre:'pensiones no contributivas y prestaciones asistenciales',anual:2803945600,anio:'2023',tipo:'presupuesto aprobado · programa 212A',fuente:'https://www.congreso.es/docu/pge2023/pge_2023-web/PGE-ROM/doc/HTM/N_23_A_R_31_2_1_G_1_2_1_1.HTM',nota:'Programa de la Seguridad Social separado de las pensiones contributivas.'}}, edificios:{iberdrola:{ nombre:'torres Iberdrola', selector:'Torre Iberdrola (Bilbao)', coste:200_000_000, anio:'2012', tipo:'umbral de inversión', fuente:'https://www.casareal.es/ES/Actividades/Paginas/actividades_actividades_detalle.aspx?data=9593', nota:'La Casa Real informó de una inversión superior a 200 M€. Se usa 200 M€ como umbral mínimo aproximado, no como coste exacto.' },glories:{ nombre:'torres Glòries', selector:'Torre Glòries / Agbar (Barcelona)', coste:130_000_000, anio:'2005', tipo:'coste de construcción aproximado', fuente:'https://es.prysmian.com/proyectos/2011-torre-agbar', nota:'Coste aproximado de la construcción, publicado para la antigua Torre Agbar, actualmente Torre Glòries.' },botin:{ nombre:'centros Botín', selector:'Centro Botín (Santander)', coste:61_000_000, anio:'2017', tipo:'coste de construcción', fuente:'https://www.bovis.es/es/proyecto/centro-botin-ref100001615.html', nota:'Coste de construcción indicado por la empresa de dirección del proyecto. Otras estimaciones incluyen obras exteriores, jardines y túnel y elevan la inversión total.' },caixaforum:{ nombre:'CaixaForum Madrid', selector:'CaixaForum Madrid', coste:60_000_000, anio:'2008', tipo:'coste del proyecto arquitectónico', fuente:'https://mediahub.fundacionlacaixa.org/es/investigacion-becas/salud/2008-02-13/obra-social-caixa-inaugura-caixaforum-madrid-nuevo-concepto-centro-social-y-cultural-4671.html', nota:'Coste publicado por la Fundación la Caixa de la transformación de la antigua central en centro cultural.' }}};
+  const HIST_EVENT_META = {"dana": {"nombre": "los daños de la DANA de Valencia", "selector": "DANA de Valencia (2024)", "coste": 19610378739.232212, "anio": "2024", "tipo": "daños directos estimados", "fuente": "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX%3A52026DC0323", "nota": "La Comisión Europea aceptó unos 18.078,315 M€ como daño directo total verosímil. No equivale a ayudas concedidas ni a pérdidas indirectas. Para el ajuste se toma el año del evento o de finalización como aproximación, al no disponer de una distribución de costes por año ni de un año de precios explícito para todo el importe.", "anioIPC": 2024, "ipcBase": 97.397, "costeOriginal": 18078315000}, "onceS": {"nombre": "los daños materiales del 11S", "selector": "Atentados del 11S (2001)", "coste": 43974042225.201065, "anio": "2001", "tipo": "daños materiales e infraestructuras estimados", "fuente": "https://www.newyorkfed.org/research/epr/02v08n2/0211rapa", "nota": "La Reserva Federal de Nueva York estimó en 21.600 millones de USD la reparación y sustitución de capital físico e infraestructuras dañadas en Nueva York. Excluye pérdidas de ingresos y consecuencias económicas más amplias. Cambio medio de 2001: 0,8952 USD/EUR. Para el IPC de 2001 se enlaza la media de 2002 (60,0, redondeada) con la variación media de 2002 (+3,5 %).", "fx": "https://fred.stlouisfed.org/data/AEXUSEU", "anioIPC": 2001, "ipcBase": 57.971014492753625, "costeOriginal": 24128686327.077747}, "paris": {"nombre": "el gasto público de París 2024", "selector": "JJ. OO. y Paralímpicos de París (2024)", "coste": 7214211326.837582, "anio": "2024", "tipo": "gasto público bruto estimado", "fuente": "https://www.senat.fr/rap/l25-139-330/l25-139-330_mono.html", "nota": "Según la Cour des comptes, recogida por el Senado francés: 3.019,2 M€ en organización y 3.631,4 M€ en infraestructuras. Balance publicado en 2025. No incluye toda la financiación privada ni descuenta ingresos. Para el ajuste se toma el año del evento o de finalización como aproximación, al no disponer de una distribución de costes por año ni de un año de precios explícito para todo el importe.", "anioIPC": 2024, "ipcBase": 97.397, "costeOriginal": 6650600000}, "qatar": {"nombre": "el coste de los estadios de Qatar 2022", "selector": "Mundial de Qatar (2022 · estadios)", "coste": 7122151595.171172, "anio": "2022", "tipo": "coste estimado de construcción de estadios", "fuente": "https://www.elibrary.imf.org/view/journals/002/2024/044/article-A002-en.xml", "nota": "El FMI recoge una estimación de 6.500 millones de USD para los estadios, no el coste total del Mundial ni el conjunto de inversiones del país. Cambio medio de 2022: 1,0534 USD/EUR. Para el ajuste se toma el año del evento o de finalización como aproximación, al no disponer de una distribución de costes por año ni de un año de precios explícito para todo el importe.", "fx": "https://fred.stlouisfed.org/data/AEXUSEU", "anioIPC": 2022, "ipcBase": 91.534, "costeOriginal": 6170495538.257073}, "turquia": {"nombre": "los daños del terremoto de Turquía", "selector": "Terremoto de Turquía (2023)", "coste": 35247731624.598816, "anio": "2023", "tipo": "daños físicos directos estimados", "fuente": "https://www.worldbank.org/en/news/press-release/2023/02/27/earthquake-damage-in-turkiye-estimated-to-exceed-34-billion-world-bank-disaster-assessment-report", "nota": "Banco Mundial: estimación inicial de 34.200 millones USD de daños físicos directos en Turquía. Excluye Siria y pérdidas indirectas. Cambio medio de 2023: 1,0817 USD/EUR.", "fx": "https://fred.stlouisfed.org/data/AEXUSEU", "anioIPC": 2023, "ipcBase": 94.768, "costeOriginal": 31616899325.136356}, "lapalma": {"nombre": "los daños del volcán de La Palma", "selector": "Erupción volcánica de La Palma (2021)", "coste": 1251077586.2068965, "anio": "2021", "tipo": "valoración aproximada de pérdidas y daños", "fuente": "https://www.lamoncloa.gob.es/lang/en/gobierno/news/Paginas/2024/20240202_aid-to-la-palma.aspx", "nota": "En febrero de 2024 La Moncloa situó la valoración total de daños y pérdidas en cerca de 1.000 M€. No equivale al importe de las ayudas. Para el ajuste se toma el año del evento o de finalización como aproximación, al no disponer de una distribución de costes por año ni de un año de precios explícito para todo el importe.", "anioIPC": 2021, "ipcBase": 84.448, "costeOriginal": 1000000000}, "notredame": {"nombre": "el presupuesto de reconstrucción de Notre-Dame", "selector": "Reconstrucción de Notre-Dame (2019–2024)", "coste": 777762836.6376787, "anio": "2019–2024", "tipo": "presupuesto de las dos primeras fases", "fuente": "https://ccomptes.fr/sites/default/files/2025-09/20250903-synthese-Chantier-cathedrale-Notre-Dame-de-Paris.pdf", "nota": "Según la Cour des comptes: 165 M€ de aseguramiento y consolidación y 552 M€ de restauración hasta la reapertura. Son presupuestos, no liquidación final; excluye la tercera fase. Para el ajuste se toma el año del evento o de finalización como aproximación, al no disponer de una distribución de costes por año ni de un año de precios explícito para todo el importe.", "anioIPC": 2024, "ipcBase": 97.397, "costeOriginal": 717000000}, "eurocopa": {"nombre": "el coste de organización de la Eurocopa 2024", "selector": "Eurocopa de Alemania (2024)", "coste": 681003499.0810804, "anio": "2024", "tipo": "coste de competición contabilizado por UEFA", "fuente": "https://editorial.uefa.com/resources/0295-1cee154c3733-a7de3ba62d06-1000/uefa_financial_report_23-24_.pdf", "nota": "Informe financiero UEFA 2023/24: 627,8 M€ de costes de competición, incluidos sedes, producción, personal y transporte. No equivale al gasto público alemán.", "anioIPC": 2024, "ipcBase": 97.397, "costeOriginal": 627800000}};
+  const HIST_IPC_TARGET = 105.651; // octubre 2026, base 2025
+  const HIST_IPC = {1997:(60/1.035)*121.6/135.7,2001:60/1.035,2002:60,2003:61.9,2004:63.7,2005:65.9,2006:68.2,2007:70.1,2008:73,2009:72.8,2010:74.1,2011:76.429,2012:78.298,2013:79.401,2014:79.281,2015:78.885,2016:78.725,2017:80.265,2018:81.609,2019:82.180,2020:81.915,2021:84.448,2022:91.534,2023:94.768,2024:97.397,2025:100,2026:HIST_IPC_TARGET};
+  const HIST_TAX_SOURCE = {2022:'https://sede.agenciatributaria.gob.es/Sede/informacion-institucional/memorias/memoria-2023/anexo-cuadros-graficos/cuadro-n-13-recaudacion-tributaria-total.html',2023:'https://sede.agenciatributaria.gob.es/Sede/informacion-institucional/memorias/memoria-2023/anexo-cuadros-graficos/cuadro-n-13-recaudacion-tributaria-total.html',2024:'https://sede.agenciatributaria.gob.es/static_files/AEAT/Estudios/Estadisticas/Informes_Estadisticos/Informes_mensuales_recaudacion_tributaria/2024/IMR_24_12_es_es.pdf'};
+  function histPoint(year, nominal, tipo, fuente, nota, alreadyAdjusted){
+    const anio=String(year), ipc=HIST_IPC[anio];
+    const valor=alreadyAdjusted ?? (ipc ? nominal*HIST_IPC_TARGET/ipc : NaN);
+    return {anio, nominal, valor, ajustado:anio!=='2026',tipo,fuente,nota};
+  }
+  function taxSeries(nombre, vals){return {nombre,puntos:Object.entries(vals).map(([y,v])=>histPoint(y,v,'recaudación tributaria líquida',HIST_TAX_SOURCE[y],'Recaudación gestionada por la AEAT, en millones de euros.'))};}
+  function catalogSeries(category){
+    const catalog={...CATALOGOS[category],...(HIST_LEGACY[category]||{})};
+    return Object.fromEntries(Object.entries(catalog).map(([key,ref])=>{
+      const event=category==='eventos'?HIST_EVENT_META[key]:null;
+      const year=event?event.anioIPC:Number(String(ref.anio).match(/\d{4}/g).at(-1));
+      const nombre=(ref.selector||ref.nombre.charAt(0).toUpperCase()+ref.nombre.slice(1)).replace(/\s*\(\d{4}(?:[–-]\d{4})?\)$/, '');
+      const nominal=(event?event.costeOriginal:(ref.anual??ref.coste))/1e6;
+      const nota=(event?event.nota:ref.nota)+(key==='starship'||key==='a350'?' Importe nominal heredado del comparador; la estimación y conversión a euros están pendientes de revisión.':'');
+      return [key,{nombre,puntos:[histPoint(year,nominal,event?event.tipo:ref.tipo,event?event.fuente:ref.fuente,nota,event?event.coste/1e6:undefined)]}];
+    }));
+  }
+  const HISTORICO={
+    impuestos:{color:'red',label:'Impuestos',series:{iva:taxSeries('Recaudación por IVA',{2022:82595,2023:83909,2024:90541}),irpf:taxSeries('Recaudación por IRPF',{2022:109485,2023:120280,2024:129408}),sociedades:taxSeries('Recaudación por Impuesto sobre Sociedades',{2022:32176,2023:35060,2024:39096})}},
+    publico:{color:'blue',label:'Gasto público',series:catalogSeries('publico')},
+    edificios:{color:'green',label:'Edificios',series:catalogSeries('edificios')},
+    bienes:{color:'yellow',label:'Bienes',series:catalogSeries('bienes')},
+    eventos:{color:'yellow',label:'Eventos',series:catalogSeries('eventos')}
   };
   const topTabs = Array.from(document.querySelectorAll('.top-tab'));
   const panels = {equivale:document.getElementById('panel-equivale'),historico:document.getElementById('panel-historico'),contacto:document.getElementById('panel-contacto')};
@@ -334,15 +387,29 @@
   document.getElementById('download-image').addEventListener('click',()=>{ const c=document.createElement('canvas'); c.width=1200; c.height=630; const ctx=c.getContext('2d'); ctx.fillStyle='#f7f7f4'; ctx.fillRect(0,0,c.width,c.height); ctx.fillStyle='#e7efe8'; ctx.beginPath(); ctx.arc(1100,100,240,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#2d765d'; ctx.globalAlpha=.85; ctx.beginPath(); ctx.arc(-20,620,190,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; ctx.fillStyle='#174a3d'; roundRect(ctx,60,62,76,76,20,true); ctx.fillStyle='#c9f178'; roundRect(ctx,84,88,30,10,5,true); roundRect(ctx,84,108,30,10,5,true); ctx.fillStyle='#192521'; ctx.font='700 54px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('equivale.',158,116); ctx.font='800 68px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('El coste de las cosas,',60,230); ctx.fillStyle='#2d765d'; ctx.fillText('en perspectiva.',60,300); ctx.fillStyle='#64726b'; ctx.font='400 28px ui-sans-serif, system-ui, sans-serif'; wrapText(ctx,'Convierte cualquier cantidad en gasto público, edificios, bienes y eventos.',60,382,560,38); ctx.fillStyle='#ffffff'; roundRect(ctx,710,170,430,330,34,true); ctx.fillStyle='#192521'; ctx.font='800 72px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(String(parseSpanishNumber(amountInput.value)||0).replace('.',','),760,270); ctx.fillStyle='#f3f5ef'; roundRect(ctx,925,218,170,54,27,true); ctx.fillStyle='#174a3d'; ctx.font='700 18px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(unitSelect.options[unitSelect.selectedIndex].text,948,252); ctx.fillStyle='#174a3d'; roundRect(ctx,730,298,390,170,32,true); ctx.fillStyle='#d6eadf'; ctx.font='500 20px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('Equivale aproximadamente a',766,340); ctx.fillStyle='#ffffff'; ctx.font='800 78px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(resultEl.textContent,760,422); ctx.font='700 26px ui-sans-serif, system-ui, sans-serif'; wrapText(ctx,resultUnitEl.textContent,925,390,160,32); ctx.font='600 16px ui-sans-serif, system-ui, sans-serif'; ctx.fillStyle='#d6eadf'; wrapText(ctx,breakdownEl.textContent,760,460,330,22); ctx.fillStyle='#64726b'; ctx.font='500 18px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('selfkingdom.github.io/equivale-web/',60,572); const a=document.createElement('a'); a.href=c.toDataURL('image/png'); a.download='equivale-resultado.png'; a.click(); setStatus('Imagen generada y descargada.'); });
   const histCategory=document.getElementById('hist-category'), histYear=document.getElementById('hist-year'), pickList=document.getElementById('pick-list'), chartArea=document.getElementById('chart-area'), chartEmpty=document.getElementById('chart-empty');
   const selectedBars=[];
-  function populateHistCategories(){ histCategory.replaceChildren(); Object.entries(HISTORICO).forEach(([key,val])=>{ const o=document.createElement('option'); o.value=key; o.textContent=val.label; histCategory.append(o);}); populateHistYears(); }
-  function populateHistYears(){ const group=HISTORICO[histCategory.value]; const years=[...new Set(Object.values(group.series).flatMap(s=>s.puntos.map(p=>p.anio)))]; histYear.replaceChildren(); years.sort().forEach(y=>{ const o=document.createElement('option'); o.value=y; o.textContent=y; histYear.append(o);}); renderPickList(); }
-  function currentSelectionKey(itemKey, year){ return `${histCategory.value}|${itemKey}|${year}`; }
-  function isSelected(key){ return selectedBars.some(x=>x.key===key); }
-  function renderPickList(){ const group=HISTORICO[histCategory.value]; const year=histYear.value; pickList.replaceChildren(); Object.entries(group.series).forEach(([itemKey,serie])=>{ const point=serie.puntos.find(p=>p.anio===year); if(!point) return; const key=currentSelectionKey(itemKey,year); const row=document.createElement('label'); row.className='pick-item'; const check=document.createElement('input'); check.type='checkbox'; check.className='pick'; check.checked=isSelected(key); check.addEventListener('change',()=>toggleBar({key, label:`${serie.nombre} (${year})`, value:point.valor, color:group.color, meta:`${esc.format(point.valor)} M€`})); const txt=document.createElement('div'); txt.innerHTML=`<div class="pick-name">${serie.nombre}</div><div class="pick-meta">${esc.format(point.valor)} M€</div>`; row.append(check, txt); pickList.append(row); }); }
-  function toggleBar(item){ const idx=selectedBars.findIndex(x=>x.key===item.key); if(idx>=0) selectedBars.splice(idx,1); else selectedBars.push(item); renderChart(); renderPickList(); }
-  function renderChart(){ chartArea.replaceChildren(); if(!selectedBars.length){ chartArea.hidden=true; chartEmpty.hidden=false; return; } chartEmpty.hidden=true; chartArea.hidden=false; const max=Math.max(...selectedBars.map(x=>x.value)); selectedBars.forEach(item=>{ const col=document.createElement('div'); col.className='bar-col'; const bar=document.createElement('div'); bar.className=`bar ${item.color}`; bar.style.height=`${Math.max(22,(item.value/max)*240)}px`; bar.textContent=item.value>=1000?`${esc.format(item.value)} M€`:`${esc.format(item.value)}`; const label=document.createElement('div'); label.className='bar-label'; label.textContent=item.label; const meta=document.createElement('div'); meta.className='bar-meta'; meta.textContent=item.meta; col.append(bar,label,meta); chartArea.append(col); }); }
-  histCategory.addEventListener('change', populateHistYears); histYear.addEventListener('change', renderPickList);
-  document.getElementById('contact-send').addEventListener('click',()=>{ const name=document.getElementById('contact-name').value.trim(); const email=document.getElementById('contact-email').value.trim(); const message=document.getElementById('contact-message').value.trim(); const subject=encodeURIComponent(`Sugerencia Equivale${name ? ' · '+name : ''}`); const body=encodeURIComponent(`Nombre: ${name || '-'}\nEmail: ${email || '-'}\n\nMensaje:\n${message || ''}`); window.location.href=`mailto:selfkingdom1@gmail.com?subject=${subject}&body=${body}`; });
+  const chartAxisTitle=document.getElementById('hist-axis-title'), histSources=document.getElementById('hist-sources'), histSourceList=document.getElementById('hist-source-list');
+  const histNumber=new Intl.NumberFormat('es-ES',{maximumFractionDigits:6});
+  function histMoney(n){return (n>0&&n<0.01?histNumber.format(n):esc.format(n))+' M€';}
+  function makeNode(tag,cls,txt){const node=document.createElement(tag);if(cls)node.className=cls;if(txt!==undefined)node.textContent=txt;return node;}
+  function populateHistCategories(){ histCategory.replaceChildren(); Object.entries(HISTORICO).forEach(([key,val])=>{const o=document.createElement('option');o.value=key;o.textContent=val.label;histCategory.append(o);});populateHistYears(); }
+  function populateHistYears(){ const group=HISTORICO[histCategory.value]; const years=[...new Set(Object.values(group.series).flatMap(s=>s.puntos.map(p=>p.anio)))];histYear.replaceChildren(); const all=document.createElement('option');all.value='all';all.textContent='Todos';histYear.append(all);years.sort((a,b)=>Number(b)-Number(a)).forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;histYear.append(o);});renderPickList(); }
+  function currentSelectionKey(itemKey, year){return `${histCategory.value}|${itemKey}|${year}`;}
+  function isSelected(key){return selectedBars.some(x=>x.key===key);}
+  function renderPickList(){const group=HISTORICO[histCategory.value], year=histYear.value;pickList.replaceChildren();Object.entries(group.series).forEach(([itemKey,serie])=>{serie.puntos.filter(p=>(year==='all'||p.anio===year)&&Number.isFinite(p.valor)).forEach(point=>{const key=currentSelectionKey(itemKey,point.anio),row=makeNode('label','pick-item'),check=document.createElement('input');check.type='checkbox';check.className='pick';check.checked=isSelected(key);const label=`${serie.nombre} (${point.anio})`;check.addEventListener('change',()=>toggleBar({key,label,value:point.valor,color:group.color,point}));const txt=makeNode('div');txt.append(makeNode('div','pick-name',label),makeNode('div','pick-meta',histMoney(point.valor)+(point.ajustado?' *':'')+' · '+point.tipo));row.append(check,txt);pickList.append(row);});});}
+  function toggleBar(item){const idx=selectedBars.findIndex(x=>x.key===item.key);if(idx>=0)selectedBars.splice(idx,1);else selectedBars.push(item);renderChart();}
+  function renderChart(){
+    chartArea.replaceChildren();histSourceList.replaceChildren();
+    const empty=!selectedBars.length;chartArea.hidden=empty;chartEmpty.hidden=!empty;chartAxisTitle.hidden=empty;histSources.hidden=empty;
+    if(empty)return;
+    const max=Math.max(...selectedBars.map(x=>x.value));const rawStep=(max||1)/4;const magnitude=10**Math.floor(Math.log10(rawStep));const normalized=rawStep/magnitude;const step=[1,2,2.5,5,10].find(v=>v>=normalized)*magnitude;const axisMax=step*4;
+    const axis=makeNode('div','hist-axis');for(let i=0;i<=4;i++){let tick=makeNode('div','hist-tick',histNumber.format(step*(4-i)));tick.style.top=`${i*25}%`;axis.append(tick);}
+    const scroll=makeNode('div','hist-scroll'),columns=makeNode('div','hist-columns');
+    selectedBars.forEach(item=>{const col=makeNode('div','bar-col'),plot=makeNode('div','hist-plot'),bar=makeNode('div',`bar ${item.color}`);bar.style.height=`${100*item.value/axisMax}%`;bar.title=`${item.label}: ${histMoney(item.value)}${item.point.ajustado?' *':''}`;bar.setAttribute('aria-label',bar.title);plot.append(bar);col.append(plot,makeNode('div','bar-label',item.label),makeNode('div','bar-meta',histMoney(item.value)+(item.point.ajustado?' *':'')));columns.append(col);
+      const p=makeNode('p');const strong=makeNode('strong','',item.label);p.append(strong,document.createElement('br'),document.createTextNode(`${item.point.tipo}. Original: ${histMoney(item.point.nominal)}. En euros de octubre de 2026: ${histMoney(item.value)}. ${item.point.nota||''} `));if(item.point.fuente){const a=makeNode('a','','Fuente de referencia');a.href=item.point.fuente;a.target='_blank';a.rel='noopener noreferrer';p.append(a);}histSourceList.append(p);
+    });scroll.append(columns);chartArea.append(axis,scroll);
+  }
+  histCategory.addEventListener('change',populateHistYears);histYear.addEventListener('change',renderPickList);
+  document.getElementById('contact-form').addEventListener('submit',(event)=>{ event.preventDefault(); const name=document.getElementById('contact-name').value.trim(); const email=document.getElementById('contact-email').value.trim(); const message=document.getElementById('contact-message').value.trim(); const subject=encodeURIComponent(`Sugerencia Equivale${name ? ' · '+name : ''}`); const body=encodeURIComponent(`Nombre: ${name || '-'}\nEmail: ${email || '-'}\n\nMensaje:\n${message || ''}`); window.location.href=`mailto:selfkingdom1@gmail.com?subject=${subject}&body=${body}`; });
   populateHistCategories(); setCategory('publico');
   </script>
 </body>
