@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="equivale-version" content="5.5.1">
+  <meta name="equivale-version" content="5.5.2">
   <meta name="theme-color" content="#f7f7f4">
   <meta name="description" content="Convierte cualquier cantidad en gasto público, edificios, bienes y eventos. Una cifra, una comparación.">
   <meta property="og:type" content="website">
@@ -282,7 +282,7 @@
       <div class="card contact-wrap">
         <h2 class="section-title">Contacto</h2>
         <p class="section-sub">Puedes enviar una sugerencia, corrección o propuesta de nueva comparativa.</p>
-        <form id="contact-form" action="https://formspree.io/f/xgakknyq" method="POST"><div class="contact-grid">
+        <form id="contact-form" action="https://formspree.io/f/xgakknyq" method="POST" accept-charset="UTF-8"><div class="contact-grid">
           <div>
             <label class="mini-label" for="contact-name">Nombre</label>
             <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="120" placeholder="Tu nombre">
@@ -296,13 +296,11 @@
             <textarea id="contact-message" name="message" required maxlength="3000" placeholder="Cuéntanos tu sugerencia"></textarea>
           </div>
         </div>
-        <input type="text" name="_gotcha" hidden tabindex="-1" autocomplete="off" aria-hidden="true">
         <input type="hidden" name="_subject" value="Nueva sugerencia · Equivale">
         <div class="contact-actions">
           <button type="submit" class="small-btn" id="contact-send">Enviar sugerencia</button>
         </div>
-        <p id="contact-status" class="contact-status" role="status" aria-live="polite" aria-atomic="true" data-state="ready">El formulario está listo. Escribe tu sugerencia y pulsa Enviar.</p>
-        <noscript><p class="contact-note">Si JavaScript está desactivado, el formulario se enviará directamente a Formspree y allí podrás ver la confirmación.</p></noscript>
+        <p id="contact-status" class="contact-status" role="status" aria-live="polite" aria-atomic="true" data-state="ready">Al enviar, Formspree te mostrará la confirmación o el motivo del error.</p>
         <p class="contact-note">Usaremos tus datos únicamente para gestionar tu sugerencia y, si facilitas un correo, responderte. El envío se procesa a través de <a href="https://formspree.io/legal/privacy-policy/" target="_blank" rel="noopener noreferrer">Formspree</a>. No incluyas información sensible.</p>
         </form>
       </div>
@@ -311,7 +309,7 @@
   <footer>Equivale compara magnitudes. No equipara financiación pública y privada. * Ajustado por inflación cuando se indica.</footer>
 
   <script>
-  // Contacto independiente: los errores del comparador no bloquean el formulario.
+  // Envío HTML nativo. Este script solo mejora el feedback; no realiza la petición.
   (() => {
     'use strict';
     const form = document.getElementById('contact-form');
@@ -319,75 +317,41 @@
     const status = document.getElementById('contact-status');
     const message = document.getElementById('contact-message');
     const email = document.getElementById('contact-email');
+    const ready = 'Al enviar, Formspree te mostrará la confirmación o el motivo del error.';
     let busy = false;
     function show(text, state) {
       status.hidden = false;
       status.dataset.state = state;
       status.textContent = text;
     }
-    function errorDetails(result) {
-      if (!result || typeof result !== 'object') return '';
-      const items = Array.isArray(result.errors) ? result.errors : [];
-      const details = items.map(e => typeof e === 'string' ? e : (e && typeof e.message === 'string' ? e.message : '')).filter(Boolean);
-      if (typeof result.error === 'string') details.push(result.error);
-      if (!details.length && typeof result.message === 'string') details.push(result.message);
-      // No devolver datos de contacto, HTML ni trazas internas al visitante.
-      return [...new Set(details)].join(' · ').replace(/\b[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+\b/g, '[correo]').replace(/[<>]/g, '').slice(0, 240);
+    function restore() {
+      busy = false;
+      button.disabled = false;
+      button.textContent = 'Enviar sugerencia';
+      form.removeAttribute('aria-busy');
+      show(ready, 'ready');
     }
     message.addEventListener('input', () => message.setCustomValidity(''));
-    form.addEventListener('invalid', event => {
-      show(event.target === email ? 'Revisa la dirección de correo electrónico.' : event.target === message ? 'Escribe una sugerencia antes de enviarla.' : 'Revisa los campos del formulario.', 'error');
+    form.addEventListener('invalid', e => {
+      show(e.target === email ? 'Revisa la dirección de correo electrónico.' : 'Escribe una sugerencia antes de enviarla.', 'error');
     }, true);
-    form.addEventListener('submit', async event => {
-      event.preventDefault();
-      if (busy) return;
+    form.addEventListener('submit', e => {
+      if (busy) { e.preventDefault(); return; }
       if (!message.value.trim()) {
+        e.preventDefault();
         message.setCustomValidity('Escribe una sugerencia antes de enviarla.');
-        show('Escribe una sugerencia antes de enviarla.', 'error');
         message.reportValidity();
         return;
       }
-      const data = new FormData(form);
-      for (const field of ['name','email','message']) data.set(field, String(data.get(field) || '').trim());
-      if (!data.get('email')) data.delete('email');
+      // No usar fetch, no cancelar el envío válido ni declarar éxito antes de la respuesta.
       busy = true;
       button.disabled = true;
       button.textContent = 'Enviando…';
       form.setAttribute('aria-busy', 'true');
-      show('Enviando tu sugerencia…', 'pending');
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 15000);
-      try {
-        const response = await fetch(form.action, {
-          method: 'POST', body: data,
-          headers: { Accept: 'application/json' },
-          referrerPolicy: 'strict-origin-when-cross-origin',
-          signal: controller.signal
-        });
-        const result = await response.json().catch(() => null);
-        if (controller.signal.aborted) {
-          show('El servicio ha tardado demasiado. No podemos confirmar el envío. Tu mensaje se conserva.', 'error');
-        } else if (response.ok && result && result.ok === true && !result.error && !(Array.isArray(result.errors) && result.errors.length)) {
-          form.reset();
-          show('¡Gracias! Tu sugerencia se ha enviado correctamente.', 'success');
-        } else if (response.ok && !errorDetails(result)) {
-          show('El servicio ha respondido, pero no podemos confirmar el envío. Tu mensaje se conserva.', 'error');
-        } else {
-          const details = errorDetails(result);
-          show(`No se ha podido enviar la sugerencia (HTTP ${response.status}).${details ? ' ' + details : ''} Tu mensaje se conserva.`, 'error');
-        }
-      } catch (error) {
-        show(controller.signal.aborted || error.name === 'AbortError'
-          ? 'El servicio ha tardado demasiado. No podemos confirmar el envío. Tu mensaje se conserva.'
-          : 'No se ha podido conectar con el servicio de envío. Comprueba la conexión o prueba con otro navegador. Tu mensaje se conserva.', 'error');
-      } finally {
-        clearTimeout(timer);
-        busy = false;
-        button.disabled = false;
-        button.textContent = 'Enviar sugerencia';
-        form.removeAttribute('aria-busy');
-      }
+      show('Enviando tu sugerencia… Espera a la respuesta de Formspree.', 'pending');
     });
+    // Si el usuario vuelve atrás, permitir otro envío sin borrar el texto recuperado.
+    window.addEventListener('pageshow', restore);
   })();
   </script>
   <script>
