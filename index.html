@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="equivale-version" content="5.4">
+  <meta name="equivale-version" content="5.5">
   <meta name="theme-color" content="#f7f7f4">
   <meta name="description" content="Convierte cualquier cantidad en gasto público, edificios, bienes y eventos. Una cifra, una comparación.">
   <meta property="og:type" content="website">
@@ -147,6 +147,10 @@
     #panel-historico .pick-name{overflow-wrap:anywhere}
     #panel-contacto #contact-send{background:var(--green);color:#fff;border-color:var(--green);padding:10px 18px}
     #panel-contacto #contact-send:hover{background:var(--green-2)}
+    #panel-contacto #contact-send:disabled{opacity:.65;cursor:wait}
+    #panel-contacto .contact-status{font-size:13px;font-weight:650;margin:12px 0 0;line-height:1.4;color:var(--green)}
+    #panel-contacto .contact-status[data-state="error"]{color:#ac342c}
+    #panel-contacto .contact-status[hidden],#panel-contacto input[hidden]{display:none!important}
     @media(max-width:699px){#panel-historico .chart-area{grid-template-columns:60px minmax(0,1fr)}#panel-historico .bar-col{flex-basis:100px;min-width:100px;width:100px}.hist-tick{font-size:9px;right:5px}}
     /* v5.4 · Agrupación opcional de comparativas, sin alterar el catálogo. */
     #panel-historico .historico-controls{grid-template-rows:auto 1fr}
@@ -274,24 +278,27 @@
       <div class="card contact-wrap">
         <h2 class="section-title">Contacto</h2>
         <p class="section-sub">Puedes enviar una sugerencia, corrección o propuesta de nueva comparativa.</p>
-        <form id="contact-form"><div class="contact-grid">
+        <form id="contact-form" action="https://formspree.io/f/xgakknyq" method="POST"><div class="contact-grid">
           <div>
             <label class="mini-label" for="contact-name">Nombre</label>
-            <input id="contact-name" type="text" placeholder="Tu nombre">
+            <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="120" placeholder="Tu nombre">
           </div>
           <div>
             <label class="mini-label" for="contact-email">Email</label>
-            <input id="contact-email" type="email" autocomplete="email" placeholder="tu@email.com">
+            <input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="tu@email.com">
           </div>
           <div class="full">
             <label class="mini-label" for="contact-message">Mensaje</label>
-            <textarea id="contact-message" required maxlength="3000" placeholder="Cuéntanos tu sugerencia"></textarea>
+            <textarea id="contact-message" name="message" required maxlength="3000" placeholder="Cuéntanos tu sugerencia"></textarea>
           </div>
         </div>
+        <input type="text" name="_gotcha" hidden tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input type="hidden" name="_subject" value="Nueva sugerencia · Equivale">
         <div class="contact-actions">
           <button type="submit" class="small-btn" id="contact-send">Enviar sugerencia</button>
         </div>
-        <p class="contact-note">Al enviar, se abrirá tu aplicación de correo con el mensaje preparado para que puedas confirmar el envío.</p>
+        <p id="contact-status" class="contact-status" role="status" aria-live="polite" hidden></p>
+        <p class="contact-note">Usaremos tus datos únicamente para gestionar tu sugerencia y, si facilitas un correo, responderte. El envío se procesa a través de <a href="https://formspree.io/legal/privacy-policy/" target="_blank" rel="noopener noreferrer">Formspree</a>. No incluyas información sensible.</p>
         </form>
       </div>
     </section>
@@ -475,7 +482,51 @@
   }
   stackYear.addEventListener('change',renderChart);stackCategory.addEventListener('change',renderChart);
   histCategory.addEventListener('change',populateHistYears);histYear.addEventListener('change',renderPickList);document.getElementById('hist-search').addEventListener('input',renderPickList);
-  document.getElementById('contact-form').addEventListener('submit',(event)=>{ event.preventDefault(); const name=document.getElementById('contact-name').value.trim(); const email=document.getElementById('contact-email').value.trim(); const message=document.getElementById('contact-message').value.trim(); const subject=encodeURIComponent(`Sugerencia Equivale${name ? ' · '+name : ''}`); const body=encodeURIComponent(`Nombre: ${name || '-'}\nEmail: ${email || '-'}\n\nMensaje:\n${message || ''}`); window.location.href=`mailto:selfkingdom1@gmail.com?subject=${subject}&body=${body}`; });
+  // Formulario de contacto: envío por HTTPS sin publicar la dirección de destino.
+  const contactForm = document.getElementById('contact-form');
+  const contactSend = document.getElementById('contact-send');
+  const contactStatus = document.getElementById('contact-status');
+  const contactMessage = document.getElementById('contact-message');
+  function showContactStatus(text, state) {
+    contactStatus.dataset.state = state;
+    contactStatus.hidden = false;
+    contactStatus.textContent = text;
+  }
+  contactMessage.addEventListener('input', () => contactMessage.setCustomValidity(''));
+  contactForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (contactSend.disabled) return;
+    if (!contactMessage.value.trim()) {
+      contactMessage.setCustomValidity('Escribe un mensaje antes de enviar.');
+      contactMessage.reportValidity();
+      return;
+    }
+    const data = new FormData(contactForm);
+    for (const field of ['name', 'email', 'message']) data.set(field, String(data.get(field) || '').trim());
+    if (!data.get('email')) data.delete('email');
+    contactSend.disabled = true;
+    contactSend.textContent = 'Enviando…';
+    contactForm.setAttribute('aria-busy', 'true');
+    showContactStatus('Enviando tu sugerencia…', 'pending');
+    try {
+      const response = await fetch(contactForm.action, {
+        method: 'POST', body: data, headers: { 'Accept': 'application/json' }
+      });
+      const result = await response.json().catch(() => null);
+      if (response.ok && result && result.ok === true) {
+        contactForm.reset();
+        showContactStatus('¡Gracias! Tu sugerencia se ha enviado correctamente.', 'success');
+      } else {
+        showContactStatus('No hemos podido enviar tu sugerencia. Tu mensaje se ha conservado. Inténtalo de nuevo más tarde.', 'error');
+      }
+    } catch (error) {
+      showContactStatus('No hemos podido confirmar el envío. Comprueba la conexión. Tu mensaje se ha conservado.', 'error');
+    } finally {
+      contactSend.disabled = false;
+      contactSend.textContent = 'Enviar sugerencia';
+      contactForm.removeAttribute('aria-busy');
+    }
+  });
   populateHistCategories(); setCategory('publico');
   </script>
 </body>
