@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="equivale-version" content="5.9">
+  <meta name="equivale-version" content="5.9.1">
   <meta name="theme-color" content="#f7f7f4">
   <meta name="description" content="Convierte cualquier cantidad en gasto público, edificios, bienes y eventos. Una cifra, una comparación.">
   <meta property="og:type" content="website">
@@ -684,12 +684,19 @@
   const loc=a=>a[en?1:0];
   const lowerFirst=v=>v.charAt(0).toLowerCase()+v.slice(1);
   function label(q){return loc(q.name);}
+  // v5.9.1: natural question wording only; keep daily seed, answers and analytics IDs unchanged.
+  const questionMoney=(v,adjusted=false)=>`${num.format(v)} ${t('millones de euros','million euros')}${adjusted?'*':''}`;
+  function amountSentence(q,adjusted=false){
+    const amount=questionMoney(q.value,adjusted), name=label(q), lower=lowerFirst(name);
+    const article=/^Recaudación /i.test(name)?'La':'El';
+    return t(`${article} ${lower} en ${q.year} fue de ${amount}.`,`${name} in ${q.year} amounted to ${amount}.`);
+  }
   function prompt(q){switch(q.kind){
-    case 'growth':return t(`${label(q)} en ${q.year}: ${money(q.value)}. ¿Cuánto varió desde ${q.from}?`,`${label(q)} in ${q.year}: ${money(q.value)}. How much did it change since ${q.from}?`);
-    case 'income':return t(`${label(q)} en ${q.year}: ${money(q.value)}. ¿Qué múltiplo del ${lowerFirst(loc(q.other))} del mismo año representó?`,`${label(q)} in ${q.year}: ${money(q.value)}. What multiple of ${lowerFirst(loc(q.other))} in the same year was that?`);
-    case 'ratio':return t(`${label(q)} en ${q.year}: ${money(q.value)}*. ¿A qué número de ${q.good[0]} equivale aproximadamente?`,`${label(q)} in ${q.year}: ${money(q.value)}*. Approximately how many ${q.good[1]} is that?`);
-    case 'time':return t(`${label(q)} en ${q.year}: ${money(q.value)}*. Si gastaras ${int.format(q.daily)} € cada día, ¿cuántos años tardarías en consumir esa cantidad?`,`${label(q)} in ${q.year}: ${money(q.value)}*. If you spent €${int.format(q.daily)} a day, how many years would it take to spend that amount?`);
-    case 'order':return t(`En ${q.year}, ¿cuál de estas tres partidas del presupuesto estatal fue ${q.largest?'mayor':'menor'}?`,`In ${q.year}, which of these three state budget items was ${q.largest?'largest':'smallest'}?`);
+    case 'growth':return amountSentence(q)+t(` ¿En qué porcentaje varió esta cifra entre ${q.from} y ${q.year}?`,` By what percentage did this figure change between ${q.from} and ${q.year}?`);
+    case 'income':return amountSentence(q)+t(` ¿Qué múltiplo del ${lowerFirst(q.other[0])} del mismo año representó?`,` How many times ${lowerFirst(q.other[1])} in the same year was that?`);
+    case 'ratio':{const goodsLabel=q.good[0],countWord=q.goodKey==='vivienda'?'cuántas':'cuántos';return amountSentence(q,true)+t(` ¿A ${countWord} ${goodsLabel} equivale aproximadamente esa cantidad?`,` Approximately how many ${q.good[1]} would that amount cover?`);}
+    case 'time':return amountSentence(q,true)+t(` Si gastases ${int.format(q.daily)} euros al día, ¿cuántos años tardarías en gastar esa cantidad?`,` If you spent ${int.format(q.daily)} euros a day, how many years would it take to spend that amount?`);
+    case 'order':return t(`Si comparamos estas tres partidas de los Presupuestos Generales del Estado de ${q.year}, ¿cuál tenía la dotación ${q.largest?'más alta':'más baja'}?`,` Looking at these three items in Spain's ${q.year} state budget, which had the ${q.largest?'largest':'smallest'} allocation?`).trim();
   }}
   function option(q,n){switch(q.kind){case 'growth':return `${n>0?'+':''}${num.format(n)} %`;case 'income':return `${num.format(n)} ${t('veces','times')}`;case 'time':return `${int.format(n)} ${t('años','years')}`;case 'order':return loc(q.items.find(i=>i.key===n).name);default:return int.format(n);}}
   function explanation(q){switch(q.kind){
