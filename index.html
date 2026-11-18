@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="equivale-version" content="5.5.2">
+  <meta name="equivale-version" content="5.6">
   <meta name="theme-color" content="#f7f7f4">
   <meta name="description" content="Convierte cualquier cantidad en gasto público, edificios, bienes y eventos. Una cifra, una comparación.">
   <meta property="og:type" content="website">
@@ -166,13 +166,23 @@
     #panel-historico .hist-stack-bar .bar{width:100%;border-radius:0;flex-shrink:0;min-height:0}
     #panel-historico .hist-stack-bar .bar:not(:first-child){box-shadow:inset 0 -1px 0 rgba(255,255,255,.8)}
     @media(max-width:820px){#panel-historico .historico-controls{grid-template-rows:auto}#panel-historico .hist-stack-options{grid-column:1/-1;grid-row:auto}#panel-historico .historico-controls .fullrow{grid-column:1/-1;grid-row:auto}}
+      .top-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .nav-right{display:flex;align-items:center;gap:12px}.lang-switch{height:30px;width:auto;font-size:11px;padding:0 5px;background:transparent;border:1px solid var(--border);border-radius:7px}
+    .quiz-wrap{padding:22px;max-width:720px;margin:0 auto}.quiz-head{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:650;color:var(--muted);margin-top:20px}.quiz-count{color:var(--green)}.quiz-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0 24px}.quiz-progress span{height:6px;border-radius:6px;background:#e7ebe5}.quiz-progress .filled{background:var(--green-2)}.quiz-type{font-size:10px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.11em}.quiz-question{font-size:clamp(20px,3.5vw,28px);letter-spacing:-.035em;line-height:1.32;margin:7px 0 20px;outline:none}.quiz-options{display:grid;gap:9px}.quiz-option{display:flex;align-items:center;gap:12px;text-align:left;width:100%;border:1.5px solid var(--border);background:#fafbf9;border-radius:12px;padding:12px 14px;color:var(--text);font-size:18px;font-weight:740;cursor:pointer;min-height:55px}.quiz-option:hover{border-color:#83ac91;background:#edf5ec}.quiz-letter{font-size:13px;font-weight:800;display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--border);border-radius:50%;color:var(--green);background:white;flex:none}.quiz-option:focus-visible,.quiz-share:focus-visible{outline:3px solid #9dd6a9;outline-offset:2px}.quiz-small{font-size:12px;line-height:1.5;color:var(--muted);margin:10px 0 0;overflow-wrap:anywhere}.quiz-score{background:var(--green);border-radius:15px;color:white;text-align:center;padding:20px 12px;font-size:14px;font-weight:650}.quiz-score-number{font-size:56px;line-height:1.1;font-weight:850;letter-spacing:-.07em;color:var(--lime)}.quiz-score-dots{font-size:18px;letter-spacing:2px;margin-top:12px}.quiz-review-heading{font-size:18px;letter-spacing:-.02em;margin:24px 0 10px;outline:none}.quiz-review{border:1px solid var(--border);border-left:4px solid #bd625a;border-radius:10px;padding:12px;margin:9px 0;background:#fcfdfb}.quiz-review.correct{border-left-color:var(--green-2)}.quiz-review-title{font-size:14px;font-weight:750;line-height:1.4}.quiz-answer{font-size:13px;font-weight:700;margin:7px 0;color:#a23c35}.quiz-review.correct .quiz-answer{color:var(--green)}.quiz-sources{display:flex;gap:15px;font-size:11px;color:var(--green);margin-top:7px}.quiz-share{background:var(--green);color:white;border:0;border-radius:999px;padding:10px 18px;font-weight:750;cursor:pointer;margin-top:15px}.collab{border-top:1px solid var(--border);padding-top:18px;margin-top:22px}.collab h3{margin:0 0 7px;font-size:18px;letter-spacing:-.035em}.collab p{font-size:13px;color:var(--muted);line-height:1.5;margin:5px 0}.collab-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.collab-links a{font-size:13px;font-weight:700;text-decoration:none;padding:9px 14px;border:1px solid var(--border);border-radius:999px;display:inline-block;color:var(--green);background:#f8faf7}.collab-links:empty{display:none}
+    @media(max-width:699px){.top-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.nav-tag{display:none}.quiz-wrap{padding:16px}.quiz-question{font-size:21px}.quiz-option{font-size:16px}}
+
   </style>
+  <script>
+  const UI_LANG = (()=>{try{const saved=localStorage.getItem('equivale.lang');if(saved==='es'||saved==='en')return saved;}catch{}return /^es(?:-|$)/i.test(navigator.language||'es')?'es':'en';})();
+  const ui=(es,en)=>UI_LANG==='en'?en:es;
+  document.documentElement.lang=UI_LANG;
+  </script>
 </head>
 <body>
   <header>
     <div class="shell nav">
       <div class="logo"><span class="mark" aria-hidden="true">=</span><span>equivale.</span></div>
-      <div class="nav-tag">Los números, en perspectiva.</div>
+      <div class="nav-right"><div class="nav-tag">Los números, en perspectiva.</div><select id="site-language" class="lang-switch" aria-label="Idioma / Language"><option value="es">ES</option><option value="en">EN</option></select></div>
     </div>
   </header>
   <main class="shell">
@@ -183,6 +193,7 @@
       <div class="top-tabs" role="tablist" aria-label="Secciones principales">
         <button class="top-tab active" data-panel="equivale" role="tab" aria-selected="true">Equivale</button>
         <button class="top-tab" data-panel="historico" role="tab" aria-selected="false">Histórico</button>
+        <button class="top-tab" data-panel="adivina" role="tab" aria-selected="false">Adivina</button>
         <button class="top-tab" data-panel="contacto" role="tab" aria-selected="false">Contacto</button>
       </div>
     </section>
@@ -278,6 +289,15 @@
       </div>
     </section>
 
+    <section id="panel-adivina" class="panel" aria-label="Adivina">
+      <div class="card quiz-wrap">
+        <h2 class="section-title" id="quiz-title">Adivina · El reto diario</h2>
+        <p class="section-sub" id="quiz-sub">Cinco preguntas para poner los números en perspectiva. Un nuevo reto cada día.</p>
+        <div id="quiz-content" aria-live="polite"></div>
+        <p class="quiz-small" id="quiz-method">Las equivalencias usan las referencias de Equivale a precios de octubre de 2026; las variaciones son nominales. Los precios son orientativos y las preguntas incluyen fuentes al terminar. Reto común que se renueva a medianoche, hora de España peninsular.</p>
+      </div>
+    </section>
+
     <section id="panel-contacto" class="panel" aria-label="Contacto">
       <div class="card contact-wrap">
         <h2 class="section-title">Contacto</h2>
@@ -303,6 +323,12 @@
         <p id="contact-status" class="contact-status" role="status" aria-live="polite" aria-atomic="true" data-state="ready">Al enviar, Formspree te mostrará la confirmación o el motivo del error.</p>
         <p class="contact-note">Usaremos tus datos únicamente para gestionar tu sugerencia y, si facilitas un correo, responderte. El envío se procesa a través de <a href="https://formspree.io/legal/privacy-policy/" target="_blank" rel="noopener noreferrer">Formspree</a>. No incluyas información sensible.</p>
         </form>
+        <section class="collab" aria-labelledby="collab-title">
+          <h3 id="collab-title">Colabora</h3>
+          <p id="collab-desc">Equivale es un proyecto independiente y de acceso gratuito. Si te resulta útil, pronto podrás contribuir voluntariamente a mantenerlo y mejorarlo.</p>
+          <div class="collab-links" id="collab-links"></div>
+          <p id="collab-pending">Las opciones de aportación estarán disponibles próximamente.</p>
+        </section>
       </div>
     </section>
   </main>
@@ -317,7 +343,7 @@
     const status = document.getElementById('contact-status');
     const message = document.getElementById('contact-message');
     const email = document.getElementById('contact-email');
-    const ready = 'Al enviar, Formspree te mostrará la confirmación o el motivo del error.';
+    const ready = ui('Al enviar, Formspree te mostrará la confirmación o el motivo del error.','Formspree will show a confirmation or explain any error.');
     let busy = false;
     function show(text, state) {
       status.hidden = false;
@@ -327,28 +353,28 @@
     function restore() {
       busy = false;
       button.disabled = false;
-      button.textContent = 'Enviar sugerencia';
+      button.textContent = ui('Enviar sugerencia','Send suggestion');
       form.removeAttribute('aria-busy');
       show(ready, 'ready');
     }
     message.addEventListener('input', () => message.setCustomValidity(''));
     form.addEventListener('invalid', e => {
-      show(e.target === email ? 'Revisa la dirección de correo electrónico.' : 'Escribe una sugerencia antes de enviarla.', 'error');
+      show(e.target === email ? ui('Revisa la dirección de correo electrónico.','Check your email address.') : ui('Escribe una sugerencia antes de enviarla.','Write a suggestion before sending it.'), 'error');
     }, true);
     form.addEventListener('submit', e => {
       if (busy) { e.preventDefault(); return; }
       if (!message.value.trim()) {
         e.preventDefault();
-        message.setCustomValidity('Escribe una sugerencia antes de enviarla.');
+        message.setCustomValidity(ui('Escribe una sugerencia antes de enviarla.','Write a suggestion before sending it.'));
         message.reportValidity();
         return;
       }
       // No usar fetch, no cancelar el envío válido ni declarar éxito antes de la respuesta.
       busy = true;
       button.disabled = true;
-      button.textContent = 'Enviando…';
+      button.textContent = ui('Enviando…','Sending…');
       form.setAttribute('aria-busy', 'true');
-      show('Enviando tu sugerencia… Espera a la respuesta de Formspree.', 'pending');
+      show(ui('Enviando tu sugerencia… Espera a la respuesta de Formspree.','Sending your suggestion… Wait for the Formspree response.'), 'pending');
     });
     // Si el usuario vuelve atrás, permitir otro envío sin borrar el texto recuperado.
     window.addEventListener('pageshow', restore);
@@ -449,7 +475,7 @@
   // Las fichas del conversor se mantienen, incluso cuando su perímetro es distinto del PGE consolidado.
   for(const key of Object.keys(catalogSeries('publico'))){HISTORICO.publico.series[key].nombre+=' · referencia del conversor';}
   const topTabs = Array.from(document.querySelectorAll('.top-tab'));
-  const panels = {equivale:document.getElementById('panel-equivale'),historico:document.getElementById('panel-historico'),contacto:document.getElementById('panel-contacto')};
+  const panels = {equivale:document.getElementById('panel-equivale'),historico:document.getElementById('panel-historico'),adivina:document.getElementById('panel-adivina'),contacto:document.getElementById('panel-contacto')};
   topTabs.forEach(btn=>btn.addEventListener('click',()=>{const key=btn.dataset.panel; topTabs.forEach(b=>{const a=b===btn; b.classList.toggle('active',a); b.setAttribute('aria-selected',String(a));}); Object.entries(panels).forEach(([k,el])=>el.classList.toggle('active',k===key));}));
   const amountInput=document.getElementById('amount'), unitSelect=document.getElementById('unit'), referenceSelect=document.getElementById('reference'), categoryButtons=Array.from(document.querySelectorAll('.category')), resultEl=document.getElementById('result'), resultUnitEl=document.getElementById('result-unit'), breakdownEl=document.getElementById('breakdown'), errorEl=document.getElementById('amount-error'), sourceValue=document.getElementById('source-value'), sourceExplanation=document.getElementById('source-explanation'), sourceLink=document.getElementById('source-link'), shareStatus=document.getElementById('share-status');
   const es2=new Intl.NumberFormat('es-ES',{maximumFractionDigits:2,minimumFractionDigits:2}), esc=new Intl.NumberFormat('es-ES',{maximumFractionDigits:2}), esi=new Intl.NumberFormat('es-ES',{maximumFractionDigits:0});
@@ -458,7 +484,7 @@
   function humanDuration(days){ const seconds=days*86400; if(seconds<60) return `Es decir, unos ${esi.format(Math.round(seconds))} segundos.`; const totalMinutes=Math.round(seconds/60), wholeDays=Math.floor(totalMinutes/(24*60)), hours=Math.floor((totalMinutes%(24*60))/60), minutes=totalMinutes%60; const chunks=[]; if(wholeDays>0) chunks.push(`${esi.format(wholeDays)} ${wholeDays===1?'día':'días'}`); if(hours>0) chunks.push(`${hours} ${hours===1?'hora':'horas'}`); if(minutes>0||chunks.length===0) chunks.push(`${minutes} ${minutes===1?'minuto':'minutos'}`); return `Es decir, ${chunks.join(', ').replace(/, ([^,]+)$/,' y $1')}.`; }
   function setCategory(next){ currentCategory=next; categoryButtons.forEach(btn=>{ const active=btn.dataset.category===next; btn.classList.toggle('active',active); btn.setAttribute('aria-pressed',String(active));}); referenceSelect.replaceChildren(); Object.entries(CATALOGOS[next]).forEach(([id,ref])=>{ const o=document.createElement('option'); o.value=id; o.textContent=(ref.selector||ref.nombre)+(ref.ajustado?' *':''); referenceSelect.append(o);}); render(); }
   function currentRef(){ return CATALOGOS[currentCategory][referenceSelect.value]; }
-  function render(){ const amount=parseSpanishNumber(amountInput.value); const euros=amount*Number(unitSelect.value); const ref=currentRef(); const valid=Number.isFinite(amount)&&Number.isFinite(euros)&&ref; errorEl.classList.toggle('show',!valid); amountInput.setAttribute('aria-invalid',valid?'false':'true'); if(!ref) return; sourceValue.textContent=currentCategory==='publico'?`Referencia: ${ref.tipo} (${ref.anio}) · ${esc.format(ref.anual/1_000_000)} millones €/año`:`Referencia: ${ref.tipo} (${ref.anio}) · ${ref.coste>=1_000_000? esc.format(ref.coste/1_000_000)+' millones €':esc.format(ref.coste)+' €'}${ref.ajustado?' *':''}`; sourceExplanation.textContent=ref.nota; sourceLink.href=ref.fuente||SITE_URL; if(!valid){ resultEl.textContent='—'; resultUnitEl.textContent=''; breakdownEl.textContent='Introduce una cantidad para ver el resultado.'; return; } const result=currentCategory==='publico'? euros/(ref.anual/365):euros/ref.coste; resultEl.textContent=result>0&&result<0.005?'<0,01':es2.format(result); if(currentCategory==='publico'){ resultUnitEl.textContent=`días de ${ref.nombre}`; breakdownEl.textContent=humanDuration(result); } else if(currentCategory==='eventos'){ resultUnitEl.textContent=`veces ${ref.nombre}${ref.ajustado?' *':''}`; breakdownEl.textContent=`${esc.format(result*100)} % de la cifra de referencia · ${esc.format(ref.coste/1_000_000)} M€${ref.ajustado?' · * Ajustado por inflación':''}.`; } else { resultUnitEl.textContent=ref.nombre; breakdownEl.textContent=`Coste de referencia: ${ref.coste>=1_000_000? esc.format(ref.coste/1_000_000)+' millones de euros':esc.format(ref.coste)+' euros'} por unidad.`; } }
+  function render(){ const amount=parseSpanishNumber(amountInput.value); const euros=amount*Number(unitSelect.value); const ref=currentRef(); const valid=Number.isFinite(amount)&&Number.isFinite(euros)&&ref; errorEl.classList.toggle('show',!valid); amountInput.setAttribute('aria-invalid',valid?'false':'true'); if(!ref) return; sourceValue.textContent=currentCategory==='publico'?`Referencia: ${ref.tipo} (${ref.anio}) · ${esc.format(ref.anual/1_000_000)} millones €/año`:`Referencia: ${ref.tipo} (${ref.anio}) · ${ref.coste>=1_000_000? esc.format(ref.coste/1_000_000)+' millones €':esc.format(ref.coste)+' €'}${ref.ajustado?' *':''}`; sourceExplanation.textContent=ref.nota; sourceLink.href=ref.fuente||SITE_URL; if(!valid){ resultEl.textContent='—'; resultUnitEl.textContent=''; breakdownEl.textContent=ui('Introduce una cantidad para ver el resultado.','Enter an amount to see the result.'); return; } const result=currentCategory==='publico'? euros/(ref.anual/365):euros/ref.coste; resultEl.textContent=result>0&&result<0.005?'<0,01':es2.format(result); if(currentCategory==='publico'){ resultUnitEl.textContent=`días de ${ref.nombre}`; breakdownEl.textContent=humanDuration(result); } else if(currentCategory==='eventos'){ resultUnitEl.textContent=`veces ${ref.nombre}${ref.ajustado?' *':''}`; breakdownEl.textContent=`${esc.format(result*100)} % de la cifra de referencia · ${esc.format(ref.coste/1_000_000)} M€${ref.ajustado?' · * Ajustado por inflación':''}.`; } else { resultUnitEl.textContent=ref.nombre; breakdownEl.textContent=`Coste de referencia: ${ref.coste>=1_000_000? esc.format(ref.coste/1_000_000)+' millones de euros':esc.format(ref.coste)+' euros'} por unidad.`; } }
   amountInput.addEventListener('input',render); unitSelect.addEventListener('change',render); referenceSelect.addEventListener('change',render); categoryButtons.forEach(btn=>btn.addEventListener('click',()=>setCategory(btn.dataset.category)));
   function buildShareText(){ const amount=parseSpanishNumber(amountInput.value); const ref=currentRef(); const amountEuros=amount*Number(unitSelect.value); const amountLabel=`${esc.format(amount)} ${unitSelect.options[unitSelect.selectedIndex].text.toLowerCase()}`; const main=resultEl.textContent; const unit=resultUnitEl.textContent; return `En Equivale, ${amountLabel} (${esc.format(amountEuros)} €) equivalen aproximadamente a ${main} ${unit}. ${SITE_URL}`; }
   async function copyToClipboard(text){ try{ await navigator.clipboard.writeText(text); return true; }catch(e){ return false; } }
@@ -487,8 +513,8 @@
   const histNumber=new Intl.NumberFormat('es-ES',{maximumFractionDigits:6});
   function histMoney(n){return (n>0&&n<0.01?histNumber.format(n):esc.format(n))+' M€';}
   function makeNode(tag,cls,txt){const node=document.createElement(tag);if(cls)node.className=cls;if(txt!==undefined)node.textContent=txt;return node;}
-  function populateHistCategories(){ histCategory.replaceChildren(); Object.entries(HISTORICO).forEach(([key,val])=>{const o=document.createElement('option');o.value=key;o.textContent=val.label;histCategory.append(o);});populateHistYears(); }
-  function populateHistYears(){ const group=HISTORICO[histCategory.value]; const years=[...new Set(Object.values(group.series).flatMap(s=>s.puntos.map(p=>p.anio)))];histYear.replaceChildren(); const all=document.createElement('option');all.value='all';all.textContent='Todos';histYear.append(all);years.sort((a,b)=>Number(b)-Number(a)).forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;histYear.append(o);});renderPickList(); }
+  function populateHistCategories(){ histCategory.replaceChildren(); Object.entries(HISTORICO).forEach(([key,val])=>{const o=document.createElement('option');o.value=key;o.textContent=UI_LANG==='en'?({impuestos:'Taxes',publico:'Public spending',edificios:'Buildings',bienes:'Goods',eventos:'Events'}[key]||val.label):val.label;histCategory.append(o);});populateHistYears(); }
+  function populateHistYears(){ const group=HISTORICO[histCategory.value]; const years=[...new Set(Object.values(group.series).flatMap(s=>s.puntos.map(p=>p.anio)))];histYear.replaceChildren(); const all=document.createElement('option');all.value='all';all.textContent=ui('Todos','All years');histYear.append(all);years.sort((a,b)=>Number(b)-Number(a)).forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;histYear.append(o);});renderPickList(); }
   function currentSelectionKey(itemKey, year){return `${histCategory.value}|${itemKey}|${year}`;}
   function isSelected(key){return selectedBars.some(x=>x.key===key);}
   function renderPickList(){const group=HISTORICO[histCategory.value], year=histYear.value;pickList.replaceChildren();Object.entries(group.series).forEach(([itemKey,serie])=>{serie.puntos.filter(p=>(year==='all'||p.anio===year)&&Number.isFinite(p.valor)).sort((a,b)=>Number(b.anio)-Number(a.anio)).forEach(point=>{const term=document.getElementById("hist-search").value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();const searchable=(serie.nombre+" "+point.anio+" "+point.tipo).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();if(term&&!term.split(/\s+/).every(t=>searchable.includes(t)))return;const key=currentSelectionKey(itemKey,point.anio),row=makeNode('label','pick-item'),check=document.createElement('input');check.type='checkbox';check.className='pick';check.checked=isSelected(key);const label=`${serie.nombre} (${point.anio})`;check.addEventListener('change',()=>toggleBar({key,label,value:point.valor,color:group.color,point}));const txt=makeNode('div');txt.append(makeNode('div','pick-name',label),makeNode('div','pick-meta',histMoney(point.valor)+(point.ajustado?' *':'')+' · '+point.tipo));row.append(check,txt);pickList.append(row);});});}
@@ -533,5 +559,84 @@
   histCategory.addEventListener('change',populateHistYears);histYear.addEventListener('change',renderPickList);document.getElementById('hist-search').addEventListener('input',renderPickList);
   populateHistCategories(); setCategory('publico');
   </script>
+  <script>
+
+(() => {
+  const select=document.getElementById('site-language');select.value=UI_LANG;
+  select.addEventListener('change',()=>{try{localStorage.setItem('equivale.lang',select.value);}catch{}const active=document.querySelector('.top-tab.active')?.dataset.panel;if(active==='adivina')location.hash='adivina';else if(location.hash==='#adivina')history.replaceState(null,'',location.pathname+location.search);location.reload();});
+  // Paste verified creator URLs here; absent links are not rendered.
+  const SUPPORT_URLS={Patreon:'', 'Ko-fi':'', PayPal:''};
+  for(const [name,url] of Object.entries(SUPPORT_URLS)){if(!/^https:\/\//i.test(url))continue;const a=document.createElement('a');a.textContent=name;a.href=url;a.target='_blank';a.rel='noopener noreferrer';document.getElementById('collab-links').append(a);}
+  if(document.getElementById('collab-links').children.length)document.getElementById('collab-pending').hidden=true;
+  if(UI_LANG!=='en')return;
+  document.title='Equivale · Putting costs into perspective';
+  const translations=[
+    ['.nav-tag','Numbers, in perspective.'],['.eyebrow','The cost of things'],['.intro > p','Enter an amount and compare it with public spending, buildings, goods and events.'],['[data-panel="historico"]','History'],['[data-panel="adivina"]','Daily quiz'],['[data-panel="contacto"]','Contact'],['label[for="amount"]','How much does it cost?'],['label[for="reference"]','What is it equivalent to?'],['#amount-error','Enter a valid non-negative amount.'],['[data-category="publico"]','Public spending'],['[data-category="edificios"]','Buildings'],['[data-category="bienes"]','Goods'],['[data-category="eventos"]','Events'],['.answer-caption','This amount is approximately equivalent to'],['#share-whatsapp','Share on WhatsApp'],['#share-x','Share on X'],['#share-substack','Share on Substack'],['#download-image','Generate image'],['.source summary','Sources and methodology'],['#source-link','View original source'],['.source .small-print','Public spending is expressed in days; the other categories use multiples. Events marked * are inflation-adjusted where indicated. Original data labels and source notes remain in Spanish.'],['#panel-historico .section-title','Interactive history'],['#panel-historico .section-sub','Choose a category and year, then select or deselect concepts. The chart updates immediately in selection order.'],['label[for="hist-category"]','Category'],['label[for="hist-year"]','Year'],['.hist-stack-options legend','Chart options'],['#hist-stack-year + span','Stack by year'],['#hist-stack-category + span','Stack by category'],['label[for="hist-search"]','Available concepts'],['#chart-empty','Select comparisons to start the chart.'],['#hist-axis-title','Millions of euros · October 2026 prices'],['#hist-sources summary','Sources for selected comparisons'],['#quiz-title','Guess · Daily challenge'],['#quiz-sub','Five questions to put numbers into perspective. A new challenge every day.'],['#quiz-method','Equivalences use Equivale benchmarks at October 2026 prices; historical changes are nominal. Prices are indicative. Sources are shown after the challenge. The daily quiz resets at midnight in mainland Spain.'],['#panel-contacto .section-title','Contact'],['#panel-contacto .section-sub','Send a suggestion, correction or proposal for a new comparison.'],['label[for="contact-name"]','Name'],['label[for="contact-message"]','Message'],['#contact-send','Send suggestion'],['#contact-status','Formspree will show a confirmation or explain any error.'],['#collab-title','Support the project'],['#collab-desc','Equivale is an independent, free-to-access project. Voluntary contributions to maintain and improve it will be available soon.'],['#collab-pending','Contribution options coming soon.'],['footer','Equivale compares magnitudes; it does not equate public and private funding. * Inflation-adjusted where indicated.']
+  ];
+  for(const [q,v] of translations){const el=document.querySelector(q);if(el)el.textContent=v;}
+  const h=document.querySelector('.intro h1');h.replaceChildren(document.createTextNode('The cost of things, '));const em=document.createElement('em');em.textContent='in perspective.';h.append(em);
+  for(const [i,txt] of ['Thousands of euros','Millions of euros','Billions of euros'].entries())document.getElementById('unit').options[i].textContent=txt;
+  const legend=[' Taxes',' Public spending',' Buildings / investments',' Goods and events'];document.querySelectorAll('.legend > span').forEach((el,i)=>{if(el.lastChild?.nodeType===3)el.lastChild.textContent=legend[i]||el.lastChild.textContent;});
+  document.querySelector('#hist-search').placeholder='Search (original Spanish concepts) or year…';document.querySelector('#contact-name').placeholder='Your name';document.querySelector('#contact-email').placeholder='you@example.com';document.querySelector('#contact-message').placeholder='Write your suggestion';
+  const note=document.querySelector('.contact-note');note.replaceChildren(document.createTextNode('Your data is only used to handle your suggestion and reply if you provide an email. Submissions are processed by '));const a=document.createElement('a');a.href='https://formspree.io/legal/privacy-policy/';a.target='_blank';a.rel='noopener noreferrer';a.textContent='Formspree';note.append(a,document.createTextNode('. Do not include sensitive information.'));
+  const langNote=document.createElement('p');langNote.className='section-sub';langNote.style.fontSize='11px';langNote.style.margin='8px auto 0';langNote.style.textAlign='center';langNote.textContent='English interface preview. Original economic concepts, source notes, converter result details and generated cards remain in Spanish. Use Spanish number format (1.234,56).';document.querySelector('.intro .top-tabs').after(langNote);
+})();
+
+</script>
+<script>
+(() => {
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const root=$('quiz-content'), lang=UI_LANG, en=lang==='en', t=(es,eng)=>en?eng:es;
+  const num=new Intl.NumberFormat(en?'en-GB':'es-ES',{maximumFractionDigits:2});
+  const int=new Intl.NumberFormat(en?'en-GB':'es-ES',{maximumFractionDigits:0});
+  const money=v=>`${num.format(v)} M€`;
+  const names={total:['Recaudación tributaria total','Total tax revenue'],irpf:['Recaudación por IRPF','Personal income tax revenue'],iva:['Recaudación por IVA','VAT revenue'],sociedades:['Recaudación por Impuesto sobre Sociedades','Corporate income tax revenue'],especiales:['Recaudación por impuestos especiales','Excise duty revenue'],directos:['Recaudación por impuestos directos (capítulo I, AEAT)','Direct tax revenue (chapter I, Spanish Tax Agency)'],ss_pensiones:['Pensiones contributivas (ejecución de la Seguridad Social)','Contributory pensions (Social Security expenditure)'],ss_incapacidad:['Incapacidad temporal (ejecución de la Seguridad Social)','Temporary incapacity benefits (Social Security expenditure)'],ss_nacimiento:['Nacimiento y cuidado (ejecución de la Seguridad Social)','Birth and childcare benefits (Social Security expenditure)'],ss_imv:['IMV y prestaciones familiares (ejecución de la Seguridad Social)','Minimum income and family benefits (Social Security expenditure)'],pge_defensa:['Defensa (presupuesto inicial aprobado)','Defence (approved initial budget)'],pge_educacion:['Educación (presupuesto inicial aprobado)','Education (approved initial budget)'],pge_sanidad:['Sanidad (presupuesto inicial aprobado)','Health (approved initial budget)'],pge_cultura:['Cultura (presupuesto inicial aprobado)','Culture (approved initial budget)'],pge_infra:['Infraestructuras (presupuesto inicial aprobado)','Infrastructure (approved initial budget)'],pge_vivienda:['Vivienda y edificación (presupuesto inicial aprobado)','Housing and construction (approved initial budget)'],pge_empleo:['Fomento del empleo (presupuesto inicial aprobado)','Employment support (approved initial budget)']};
+  const verifiedTax={'total':[271935,294734,325356],'irpf':[120280,129408,142466],'iva':[83909,90541,99532],'sociedades':[35060,39096,42266],'especiales':[20757,22128,23083],'directos':[159751,174073]};
+  const tax24='https://sede.agenciatributaria.gob.es/Sede/informacion-institucional/memorias/memoria-2024/anexo-cuadros-graficos/cuadro-n-13-recaudacion-tributaria-total.html';
+  const tax25='https://sede.agenciatributaria.gob.es/Sede/estadisticas/recaudacion-tributaria/informe-anual/ejercicio-2025.html';
+  const series=Object.keys(names).map(key=>{
+    let rows;
+    if(verifiedTax[key]) rows=verifiedTax[key].map((v,i)=>({anio:String(2023+i),nominal:v,valor:v*HIST_IPC_TARGET/HIST_IPC[2023+i],fuente:i===2?tax25:tax24,tipo:'AEAT'}));
+    else rows=(HISTORICO.publico.series[key]?.puntos||[]).filter(p=>Number(p.anio)>=2021&&Number(p.anio)<=2025&&Number.isFinite(p.valor)&&p.nominal>0&&!p.fuenteSecundaria&&!/parcial|provisional|prorrogado|estimación/i.test(p.tipo));
+    return {key,name:names[key],rows:rows.sort((a,b)=>Number(a.anio)-Number(b.anio))};
+  }).filter(s=>s.rows.length>=2);
+  const goodsNames={vivienda:['viviendas tipo','benchmark homes'],a350:['aviones Airbus A350-900','Airbus A350-900 aircraft'],eurofighter:['aviones Eurofighter','Eurofighter aircraft'],bugatti:['Bugatti Tourbillon','Bugatti Tourbillon cars'],talgo:['trenes Talgo Avril','Talgo Avril trains'],corolla:['Toyota Corolla híbridos','Toyota Corolla hybrids'],iphone:['iPhone 17','iPhone 17 phones']};
+  const goods=Object.entries(goodsNames).map(([key,name])=>({key,name,p:HISTORICO.bienes.series[key]?.puntos[0]})).filter(g=>g.p&&Number.isFinite(g.p.valor)&&g.p.valor>0);
+  function today(){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());return ['year','month','day'].map(k=>parts.find(p=>p.type===k).value).join('-');}
+  function rng(seed){let h=2166136261;for(const c of seed)h=Math.imul(h^c.charCodeAt(0),16777619);return ()=>{h=(Math.imul(h,1664525)+1013904223)|0;return (h>>>0)/4294967296;};}
+  const pick=(a,r)=>a[Math.floor(r()*a.length)];
+  function shuffle(a,r){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  const sig=v=>Math.max(1,Math.round(v/(10**Math.max(0,Math.floor(Math.log10(v))-1)))*(10**Math.max(0,Math.floor(Math.log10(v))-1)));
+  const round1=v=>Math.round(v*10)/10;
+  function build(date){
+    const r=rng('equivale-adivina-v1|'+date), chosen=shuffle(series,r).slice(0,5), usedGoods=shuffle(goods,r).slice(0,3);
+    const questions=chosen.map((s,i)=>{
+      if(i<3){const p=pick(s.rows,r),g=usedGoods[i],raw=p.valor/g.p.valor,correct=sig(raw);let lo=sig(raw*(.43+r()*.22)),hi=sig(raw*(1.4+r()*.48));if(lo>=correct)lo=Math.max(1,correct-1);if(hi<=correct)hi=correct+1;return {kind:'ratio',name:s.name,year:p.anio,value:p.valor,nominal:p.nominal,good:g.name,goodKey:g.key,goodCost:g.p.valor,goodNominal:g.p.nominal,goodYear:g.p.anio,answer:correct,raw,options:shuffle([lo,correct,hi],r),sources:[p.fuente,g.p.fuente].filter(Boolean)};}
+      const end=s.rows[1+Math.floor(r()*(s.rows.length-1))],start=pick(s.rows.filter(p=>Number(p.anio)<Number(end.anio)),r),raw=(end.nominal/start.nominal-1)*100,correct=round1(raw),delta=Math.max(4,Math.abs(correct)*.45);return {kind:'growth',name:s.name,from:start.anio,year:end.anio,start:start.nominal,value:end.nominal,answer:correct,raw,options:shuffle([round1(correct-delta),correct,round1(correct+delta*.9)],r),sources:[start.fuente,end.fuente].filter(Boolean)};
+    });return shuffle(questions,r);
+  }
+  const storageKey='equivale.daily.quiz.v1';let state;
+  function read(){try{return JSON.parse(localStorage.getItem(storageKey));}catch{return null;}}
+  function save(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{}}
+  function valid(s,date){return s&&s.date===date&&Array.isArray(s.questions)&&s.questions.length===5&&Array.isArray(s.answers)&&s.answers.length<=5&&s.questions.every(q=>q.options?.length===3&&q.options.includes(q.answer))&&s.answers.every((a,i)=>s.questions[i].options.includes(a));}
+  function init(){const date=today(),old=read();if(state?.date===date)return false;state=valid(old,date)?old:{date,questions:build(date),answers:[]};save();return true;}
+  function label(q){return q.name[en?1:0];}
+  function prompt(q){return q.kind==='ratio'?t(`${label(q)} en ${q.year}: ${money(q.value)} (a precios de octubre de 2026). ¿A qué número de ${q.good[0]} se aproxima más?`,`${label(q)} in ${q.year}: ${money(q.value)} (October 2026 prices). Which number of ${q.good[1]} is closest?`):t(`${label(q)} en ${q.year}: ${money(q.value)}. ¿Cuánto varió desde ${q.from}, sin descontar la inflación?`,`${label(q)} in ${q.year}: ${money(q.value)}. How much did it change since ${q.from}, before adjusting for inflation?`);}
+  function option(q,n){return q.kind==='growth'?`${n>0?'+':''}${num.format(n)} %`:int.format(n);}
+  function explanation(q){if(q.kind==='growth')return t(`${money(q.start)} → ${money(q.value)}: (${num.format(q.value)} ÷ ${num.format(q.start)} − 1) × 100 = ${option(q,q.answer)}. Variación nominal.`,`${money(q.start)} → ${money(q.value)}: (${num.format(q.value)} ÷ ${num.format(q.start)} − 1) × 100 = ${option(q,q.answer)}. Nominal change.`);const note=q.goodKey==='a350'?t(' Referencia orientativa de catálogo de 2018; no precio de venta real.',' Indicative 2018 list-price benchmark, not an actual selling price.'):q.goodKey==='vivienda'?t(' Vivienda de referencia, no media nacional.',' Benchmark home, not a national average.'):'';return t(`${money(q.value)} ÷ ${money(q.goodCost)} por unidad ≈ ${int.format(q.raw)} unidades. Ambas cifras a precios de octubre de 2026.${note}`,`${money(q.value)} ÷ ${money(q.goodCost)} per unit ≈ ${int.format(q.raw)} units. Both in October 2026 prices.${note}`);}
+  function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;}
+  function render(focus=false){init();root.replaceChildren();const idx=state.answers.length,done=idx===5;const date=el('div','quiz-date',new Intl.DateTimeFormat(en?'en-GB':'es-ES',{dateStyle:'long',timeZone:'UTC'}).format(new Date(state.date+'T12:00:00Z')));const head=el('div','quiz-head');head.append(date,el('span','quiz-count',done?t('Reto completado','Challenge completed'):t(`Pregunta ${idx+1} de 5`,`Question ${idx+1} of 5`)));root.append(head);
+    const progress=el('div','quiz-progress');progress.setAttribute('aria-label',t(`${idx} de 5 respondidas`,`${idx} out of 5 answered`));for(let i=0;i<5;i++){let b=el('span',i<idx?'filled':'');progress.append(b);}root.append(progress);
+    if(!done){const q=state.questions[idx],h=el('h3','quiz-question',prompt(q));h.tabIndex=-1;root.append(el('div','quiz-type',q.kind==='ratio'?t('Equivalencias','Equivalences'):t('Evolución histórica','Historical change')),h);const options=el('div','quiz-options');q.options.forEach((n,i)=>{let b=el('button','quiz-option');b.type='button';b.append(el('span','quiz-letter',String.fromCharCode(65+i)),el('span','',option(q,n)));b.addEventListener('click',()=>{if(today()!==state.date){init();render(true);return;}if(state.answers.length!==idx)return;state.answers.push(n);save();render(true);});options.append(b);});root.append(options,el('p','quiz-small',t('Verás las respuestas correctas al terminar las cinco preguntas.','You will see the correct answers after all five questions.')));if(focus)h.focus({preventScroll:true});return;}
+    const count=state.answers.filter((v,i)=>v===state.questions[i].answer).length;const score=el('div','quiz-score');score.append(el('div','quiz-score-number',`${count}/5`),el('div','',t('Respuestas correctas','Correct answers')),el('div','quiz-score-dots',state.answers.map((a,i)=>a===state.questions[i].answer?'🟩':'⬜').join(' ')));root.append(score);
+    const h=el('h3','quiz-review-heading',t('Repasa tus respuestas','Review your answers'));h.tabIndex=-1;root.append(h);
+    state.questions.forEach((q,i)=>{const a=state.answers[i],ok=a===q.answer,row=el('article','quiz-review '+(ok?'correct':'incorrect'));row.append(el('div','quiz-review-title',`${i+1}. ${prompt(q)}`),el('p','quiz-answer',`${t('Tu respuesta','Your answer')}: ${option(q,a)} · ${t('Correcta','Correct')}: ${option(q,q.answer)} ${ok?'✓':'✕'}`),el('p','quiz-small',explanation(q)));const sources=el('div','quiz-sources');[...new Set(q.sources)].forEach((url,j)=>{let a=el('a','',t('Fuente','Source')+(j?' '+(j+1):''));if(/^https:\/\//i.test(url)){a.href=url;a.target='_blank';a.rel='noopener noreferrer';sources.append(a);}});row.append(sources);root.append(row);});
+    const b=el('button','quiz-share',t('Compartir resultado','Share result'));b.type='button';const status=el('p','quiz-small','');status.setAttribute('role','status');b.addEventListener('click',async()=>{const text=`Equivale · ${t('Adivina','Daily quiz')} ${state.date}\n${count}/5 ${state.answers.map((a,i)=>a===state.questions[i].answer?'🟩':'⬜').join('')}\n${SITE_URL}#adivina`;try{if(navigator.share){await navigator.share({text});return;}await navigator.clipboard.writeText(text);status.textContent=t('Resultado copiado.','Result copied.');}catch(e){if(e.name==='AbortError')return;status.textContent=text;}});root.append(b,status,el('p','quiz-small',t('Mañana habrá un nuevo reto. El progreso se guarda en este navegador.','A new challenge arrives tomorrow. Progress is saved on this browser.')));if(focus)h.focus({preventScroll:true});
+  }
+  init();render();document.querySelector('[data-panel="adivina"]').addEventListener('click',()=>{if(init())render();});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&init())render();});setInterval(()=>{if(init())render();},60000);if(location.hash==='#adivina')document.querySelector('[data-panel="adivina"]').click();
+})();
+
+</script>
 </body>
 </html>
