@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="equivale-version" content="5.8">
+  <meta name="equivale-version" content="5.9">
   <meta name="theme-color" content="#f7f7f4">
   <meta name="description" content="Convierte cualquier cantidad en gasto público, edificios, bienes y eventos. Una cifra, una comparación.">
   <meta property="og:type" content="website">
@@ -619,8 +619,30 @@
   const round1=v=>Math.round(v*10)/10;
   const kindNames={growth:['Evolución interanual','Change over time'],income:['Ingresos y gastos','Revenue and spending'],ratio:['Equivalencia en bienes','Goods equivalence'],time:['Dinero y tiempo','Money and time'],order:['Mayor o menor','Higher or lower']};
   const at=(s,y)=>s.rows.find(p=>p.anio===y);
-  // Independent events: integration point for future aggregate telemetry. No remote collection is enabled.
-  function reportAnswer(q,answer,date){try{window.dispatchEvent(new CustomEvent('equivale:quiz-answer',{detail:{type:q.kind,correct:answer===q.answer,date,quizVersion:2}}));}catch{}}
+  // Optional, per-challenge statistics. No identity or cross-day ID is collected.
+  const analyticsEndpoint='https://equivale-analytics.selfkingdom1.workers.dev/events';
+  const analyticsTypes=['growth','income','ratio','time','order'];
+  let sending=false,retryTimer=0,retryDelay=2000,questionStarted=null,clockKey='';
+  const quizVisible=()=>!document.hidden&&$('panel-adivina').classList.contains('active');
+  function clock(){const key=state.date+'|'+state.answers.length;if(!quizVisible()||state.answers.length===5){questionStarted=null;clockKey='';return;}if(clockKey!==key||questionStarted===null){clockKey=key;questionStarted=performance.now();}}
+  function elapsed(){return questionStarted===null?null:Math.min(86400000,Math.max(0,Math.round(performance.now()-questionStarted)));}
+  function queueEvent(kind,extra={}){const a=state.analytics;if(!a?.active)return;a.pending.push({event:kind,game_id:a.id,game_date:state.date,...extra});}
+  function retry(){if(retryTimer)return;retryTimer=setTimeout(()=>{retryTimer=0;flushAnalytics();},retryDelay);retryDelay=Math.min(60000,retryDelay*2);}
+  async function flushAnalytics(){if(sending||!state?.analytics?.active||!state.analytics.pending.length||!navigator.onLine)return;const owner=state,a=owner.analytics;sending=true;
+    try{while(owner===state&&a.active&&a.pending.length){const event=a.pending[0];let response;const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),10000);try{response=await fetch(analyticsEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(event),credentials:'omit',referrerPolicy:'no-referrer',keepalive:true,signal:controller.signal});}catch{if(a.active&&owner===state)retry();return;}finally{clearTimeout(timeout);}
+      if(owner!==state||!a.active||a.pending[0]!==event)return;
+      if(!response.ok&&(response.status===429||response.status>=500)){retry();return;}
+      // Permanent validation failures are not retried; the game remains independent.
+      a.pending.shift();save();retryDelay=2000;
+    }}finally{sending=false;if(state?.analytics?.active&&state.analytics.pending.length&&!retryTimer&&navigator.onLine&&state!==owner)queueMicrotask(flushAnalytics);}}
+  function reportAnswer(q,answer,date){try{window.dispatchEvent(new CustomEvent('equivale:quiz-answer',{detail:{type:q.kind,correct:answer===q.answer,date,quizVersion:2}}));}catch{};queueEvent('answer',{question_type:analyticsTypes.indexOf(q.kind)+1,is_correct:answer===q.answer,response_time_ms:elapsed(),quiz_version:2});}
+  function analyticsChoice(){const a=state.analytics,idx=state.answers.length;if(idx>0&&!a?.active)return;
+    const wrap=el('div','quiz-small');wrap.style.margin='8px 0 13px';
+    const label=el('label','');label.style.cssText='display:flex;align-items:flex-start;gap:8px;cursor:pointer;color:var(--muted)';
+    const check=el('input','');check.type='checkbox';check.checked=!!a?.active;check.style.cssText='width:17px;height:17px;flex:none;margin:2px 0 0;accent-color:var(--green);padding:0';check.id='quiz-analytics-optin';
+    label.append(check,el('span','',t('Compartir estadísticas de esta partida (opcional)','Share statistics for this game (optional)')));wrap.append(label,el('div','',t('Se envían tipo de pregunta, acierto y tiempo aproximado con un ID aleatorio de partida. Cloudflare limita abusos mediante IP, que no guardamos en D1. Puedes desmarcarlo para detener futuros envíos; los ya recibidos se conservan.','Question type, correctness and approximate time are sent with a random game ID. Cloudflare uses IP for abuse prevention; we do not store it in D1. Uncheck to stop future submissions; received data is retained.')));
+    check.addEventListener('change',()=>{if(check.checked){if(state.answers.length||!crypto.randomUUID){check.checked=false;return;}if(!state.analytics)state.analytics={id:crypto.randomUUID(),active:false,pending:[]};state.analytics.active=true;queueEvent('start');save();clock();flushAnalytics();}else if(state.analytics){state.analytics.active=false;state.analytics.pending=[];clearTimeout(retryTimer);retryTimer=0;save();}});root.append(wrap);
+  }
   function numericOptions(raw,r,integer=false){
     const round=integer?v=>Math.max(1,Math.round(sig(v))):v=>Number(v.toPrecision(2));
     const answer=round(raw), step=integer?1:Math.max(Math.abs(answer)*.1,.00001);
@@ -658,7 +680,7 @@
   function read(){try{return JSON.parse(localStorage.getItem(storageKey));}catch{return null;}}
   function save(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{}}
   function valid(s,date){return s&&s.date===date&&Array.isArray(s.questions)&&s.questions.length===5&&Array.isArray(s.answers)&&s.answers.length<=5&&s.questions.every(q=>kindNames[q.kind]&&q.options?.length===3&&new Set(q.options).size===3&&q.options.includes(q.answer))&&s.answers.every((a,i)=>s.questions[i].options.includes(a));}
-  function init(){const date=today(),old=read();if(state?.date===date)return false;state=valid(old,date)?old:{date,questions:build(date),answers:[]};save();return true;}
+  function init(){const date=today(),old=read();if(state?.date===date)return false;state=valid(old,date)?old:{date,questions:build(date),answers:[]};if(state.analytics&&(!/^[0-9a-f-]{36}$/i.test(state.analytics.id||'')||!Array.isArray(state.analytics.pending)))delete state.analytics;save();return true;}
   const loc=a=>a[en?1:0];
   const lowerFirst=v=>v.charAt(0).toLowerCase()+v.slice(1);
   function label(q){return loc(q.name);}
@@ -680,13 +702,14 @@
   function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;}
   function render(focus=false){init();root.replaceChildren();const idx=state.answers.length,done=idx===5;const date=el('div','quiz-date',new Intl.DateTimeFormat(en?'en-GB':'es-ES',{dateStyle:'long',timeZone:'UTC'}).format(new Date(state.date+'T12:00:00Z')));const head=el('div','quiz-head');head.append(date,el('span','quiz-count',done?t('Reto completado','Challenge completed'):t(`Pregunta ${idx+1} de 5`,`Question ${idx+1} of 5`)));root.append(head);
     const progress=el('div','quiz-progress');progress.setAttribute('aria-label',t(`${idx} de 5 respondidas`,`${idx} out of 5 answered`));for(let i=0;i<5;i++){let b=el('span',i<idx?'filled':'');progress.append(b);}root.append(progress);
-    if(!done){const q=state.questions[idx],h=el('h3','quiz-question',prompt(q));h.tabIndex=-1;root.append(el('div','quiz-type',loc(kindNames[q.kind])),h);const options=el('div','quiz-options');q.options.forEach((n,i)=>{let b=el('button','quiz-option');b.type='button';b.append(el('span','quiz-letter',String.fromCharCode(65+i)),el('span','',option(q,n)));b.addEventListener('click',()=>{if(today()!==state.date){init();render(true);return;}if(state.answers.length!==idx)return;state.answers.push(n);save();reportAnswer(q,n,state.date);render(true);});options.append(b);});root.append(options,el('p','quiz-small',t('Verás las respuestas correctas al terminar las cinco preguntas.','You will see the correct answers after all five questions.')));if(focus)h.focus({preventScroll:true});return;}
+    analyticsChoice();clock();
+    if(!done){const q=state.questions[idx],h=el('h3','quiz-question',prompt(q));h.tabIndex=-1;root.append(el('div','quiz-type',loc(kindNames[q.kind])),h);const options=el('div','quiz-options');q.options.forEach((n,i)=>{let b=el('button','quiz-option');b.type='button';b.append(el('span','quiz-letter',String.fromCharCode(65+i)),el('span','',option(q,n)));b.addEventListener('click',()=>{if(today()!==state.date){init();render(true);return;}if(state.answers.length!==idx)return;state.answers.push(n);reportAnswer(q,n,state.date);save();flushAnalytics();render(true);});options.append(b);});root.append(options,el('p','quiz-small',t('Verás las respuestas correctas al terminar las cinco preguntas.','You will see the correct answers after all five questions.')));if(focus)h.focus({preventScroll:true});return;}
     const count=state.answers.filter((v,i)=>v===state.questions[i].answer).length;const score=el('div','quiz-score');score.append(el('div','quiz-score-number',`${count}/5`),el('div','',t('Respuestas correctas','Correct answers')),el('div','quiz-score-dots',state.answers.map((a,i)=>a===state.questions[i].answer?'🟩':'⬜').join(' ')));root.append(score);
     const h=el('h3','quiz-review-heading',t('Repasa tus respuestas','Review your answers'));h.tabIndex=-1;root.append(h);
     state.questions.forEach((q,i)=>{const a=state.answers[i],ok=a===q.answer,row=el('article','quiz-review '+(ok?'correct':'incorrect'));row.append(el('div','quiz-review-title',`${i+1}. ${prompt(q)}`),el('p','quiz-answer',`${t('Tu respuesta','Your answer')}: ${option(q,a)} · ${t('Correcta','Correct')}: ${option(q,q.answer)} ${ok?'✓':'✕'}`),el('p','quiz-small',explanation(q)));const sources=el('div','quiz-sources');[...new Set([...q.sources,...(['ratio','time'].includes(q.kind)?['https://www.ine.es/consul/serie.do?L=0&d=true&s=IPC290751']:[])])].forEach((url,j)=>{let a=el('a','',t('Fuente','Source')+(j?' '+(j+1):''));if(/^https:\/\//i.test(url)){a.href=url;a.target='_blank';a.rel='noopener noreferrer';sources.append(a);}});row.append(sources);root.append(row);});
     const b=el('button','quiz-share',t('Compartir resultado','Share result'));b.type='button';const status=el('p','quiz-small','');status.setAttribute('role','status');b.addEventListener('click',async()=>{const text=`Equivale · ${t('Adivina','Daily quiz')} ${state.date}\n${count}/5 ${state.answers.map((a,i)=>a===state.questions[i].answer?'🟩':'⬜').join('')}\n${SITE_URL}#adivina`;try{if(navigator.share){await navigator.share({text});return;}await navigator.clipboard.writeText(text);status.textContent=t('Resultado copiado.','Result copied.');}catch(e){if(e.name==='AbortError')return;status.textContent=text;}});root.append(b,status,el('p','quiz-small',t('Mañana habrá un nuevo reto. El progreso se guarda en este navegador.','A new challenge arrives tomorrow. Progress is saved on this browser.')));if(focus)h.focus({preventScroll:true});
   }
-  init();render();document.querySelector('[data-panel="adivina"]').addEventListener('click',()=>{if(init())render();});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&init())render();});setInterval(()=>{if(init())render();},60000);if(location.hash==='#adivina')document.querySelector('[data-panel="adivina"]').click();
+  init();render();document.querySelectorAll('.top-tab').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.panel==='adivina'){if(init())render();clock();flushAnalytics();}else clock();}));document.addEventListener('visibilitychange',()=>{if(!document.hidden&&init())render();clock();if(!document.hidden&&quizVisible())flushAnalytics();});window.addEventListener('online',flushAnalytics);setInterval(()=>{if(init())render();if(quizVisible())flushAnalytics();},60000);if(location.hash==='#adivina')document.querySelector('[data-panel="adivina"]').click();
 })();
 
 </script>
