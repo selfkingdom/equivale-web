@@ -3,15 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="equivale-version" content="5.12.4">
+  <meta name="equivale-version" content="5.13.0">
   <meta name="theme-color" content="#f7f7f4">
+  <link rel="canonical" href="https://equivale.net/">
   <meta name="description" content="Convierte cualquier cantidad en gasto público, edificios, bienes y eventos. Una cifra, una comparación.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Equivale">
+  <meta property="og:locale" content="es_ES">
   <meta property="og:title" content="Equivale · El coste de las cosas, en perspectiva">
   <meta property="og:description" content="Convierte cualquier cantidad en gasto público, edificios, bienes y eventos. Una cifra, una comparación.">
-  <meta property="og:url" content="https://selfkingdom.github.io/equivale-web/">
-  <meta property="og:image" content="https://selfkingdom.github.io/equivale-web/equivale-og.png">
+  <meta property="og:url" content="https://equivale.net/">
+  <meta property="og:image" content="https://equivale.net/equivale-og.png">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:alt" content="Equivale · Los números, en perspectiva">
   <meta property="og:image:width" content="1200">
@@ -19,7 +21,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Equivale · El coste de las cosas, en perspectiva">
   <meta name="twitter:description" content="Convierte cualquier cantidad en gasto público, edificios, bienes y eventos. Una cifra, una comparación.">
-  <meta name="twitter:image" content="https://selfkingdom.github.io/equivale-web/equivale-og.png">
+  <meta name="twitter:image" content="https://equivale.net/equivale-og.png">
   <link rel="icon" type="image/png" sizes="512x512" href="equivale-icon.png">
   <link rel="apple-touch-icon" href="equivale-icon.png">
   <title>Equivale · El coste de las cosas, en perspectiva</title>
@@ -393,7 +395,7 @@
   </script>
   <script>
   'use strict';
-  const SITE_URL = 'https://selfkingdom.github.io/equivale-web/';
+  const SITE_URL = 'https://equivale.net/';
   const SOCIAL = {
     xHandle: 'self_kingdom1',
     substackName: '@selfkingdom',
@@ -577,7 +579,7 @@
   document.getElementById('share-substack').addEventListener('click',async()=>{ const text=`${buildShareText()}\n\nPublicado desde ${SOCIAL.substackName}`; const copied=await copyToClipboard(text); window.open(SOCIAL.substackUrl,'_blank','noopener'); setStatus(copied?'Texto copiado para Substack. Pégalo en tu publicación o en Notes.':'No se pudo copiar automáticamente.'); });
   function roundRect(ctx,x,y,w,h,r,fill){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); if(fill) ctx.fill(); else ctx.stroke(); }
   function wrapText(ctx,text,x,y,maxWidth,lineHeight){ const words=text.split(' '); let line=''; for(let n=0;n<words.length;n++){ const test=line+words[n]+' '; const m=ctx.measureText(test); if(m.width>maxWidth&&n>0){ ctx.fillText(line,x,y); line=words[n]+' '; y+=lineHeight; } else line=test; } ctx.fillText(line,x,y); }
-  document.getElementById('download-image').addEventListener('click',()=>{ const c=document.createElement('canvas'); c.width=1200; c.height=630; const ctx=c.getContext('2d'); ctx.fillStyle='#f7f7f4'; ctx.fillRect(0,0,c.width,c.height); ctx.fillStyle='#e7efe8'; ctx.beginPath(); ctx.arc(1100,100,240,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#2d765d'; ctx.globalAlpha=.85; ctx.beginPath(); ctx.arc(-20,620,190,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; ctx.fillStyle='#174a3d'; roundRect(ctx,60,62,76,76,20,true); ctx.fillStyle='#c9f178'; roundRect(ctx,84,88,30,10,5,true); roundRect(ctx,84,108,30,10,5,true); ctx.fillStyle='#192521'; ctx.font='700 54px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('equivale.',158,116); ctx.font='800 68px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('El coste de las cosas,',60,230); ctx.fillStyle='#2d765d'; ctx.fillText('en perspectiva.',60,300); ctx.fillStyle='#64726b'; ctx.font='400 28px ui-sans-serif, system-ui, sans-serif'; wrapText(ctx,'Convierte cualquier cantidad en gasto público, edificios, bienes y eventos.',60,382,560,38); ctx.fillStyle='#ffffff'; roundRect(ctx,710,170,430,330,34,true); ctx.fillStyle='#192521'; ctx.font='800 72px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(String(parseSpanishNumber(amountInput.value)||0).replace('.',','),760,270); ctx.fillStyle='#f3f5ef'; roundRect(ctx,925,218,170,54,27,true); ctx.fillStyle='#174a3d'; ctx.font='700 18px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(unitSelect.options[unitSelect.selectedIndex].text,948,252); ctx.fillStyle='#174a3d'; roundRect(ctx,730,298,390,170,32,true); ctx.fillStyle='#d6eadf'; ctx.font='500 20px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('Equivale aproximadamente a',766,340); ctx.fillStyle='#ffffff'; ctx.font='800 78px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(resultEl.textContent,760,422); ctx.font='700 26px ui-sans-serif, system-ui, sans-serif'; wrapText(ctx,resultUnitEl.textContent,925,390,160,32); ctx.font='600 16px ui-sans-serif, system-ui, sans-serif'; ctx.fillStyle='#d6eadf'; wrapText(ctx,breakdownEl.textContent,760,460,330,22); ctx.fillStyle='#64726b'; ctx.font='500 18px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('selfkingdom.github.io/equivale-web/',60,572); const a=document.createElement('a'); a.href=c.toDataURL('image/png'); a.download='equivale-resultado.png'; a.click(); setStatus('Imagen generada y descargada.'); });
+  document.getElementById('download-image').addEventListener('click',()=>{ const c=document.createElement('canvas'); c.width=1200; c.height=630; const ctx=c.getContext('2d'); ctx.fillStyle='#f7f7f4'; ctx.fillRect(0,0,c.width,c.height); ctx.fillStyle='#e7efe8'; ctx.beginPath(); ctx.arc(1100,100,240,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#2d765d'; ctx.globalAlpha=.85; ctx.beginPath(); ctx.arc(-20,620,190,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; ctx.fillStyle='#174a3d'; roundRect(ctx,60,62,76,76,20,true); ctx.fillStyle='#c9f178'; roundRect(ctx,84,88,30,10,5,true); roundRect(ctx,84,108,30,10,5,true); ctx.fillStyle='#192521'; ctx.font='700 54px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('equivale.',158,116); ctx.font='800 68px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('El coste de las cosas,',60,230); ctx.fillStyle='#2d765d'; ctx.fillText('en perspectiva.',60,300); ctx.fillStyle='#64726b'; ctx.font='400 28px ui-sans-serif, system-ui, sans-serif'; wrapText(ctx,'Convierte cualquier cantidad en gasto público, edificios, bienes y eventos.',60,382,560,38); ctx.fillStyle='#ffffff'; roundRect(ctx,710,170,430,330,34,true); ctx.fillStyle='#192521'; ctx.font='800 72px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(String(parseSpanishNumber(amountInput.value)||0).replace('.',','),760,270); ctx.fillStyle='#f3f5ef'; roundRect(ctx,925,218,170,54,27,true); ctx.fillStyle='#174a3d'; ctx.font='700 18px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(unitSelect.options[unitSelect.selectedIndex].text,948,252); ctx.fillStyle='#174a3d'; roundRect(ctx,730,298,390,170,32,true); ctx.fillStyle='#d6eadf'; ctx.font='500 20px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('Equivale aproximadamente a',766,340); ctx.fillStyle='#ffffff'; ctx.font='800 78px ui-sans-serif, system-ui, sans-serif'; ctx.fillText(resultEl.textContent,760,422); ctx.font='700 26px ui-sans-serif, system-ui, sans-serif'; wrapText(ctx,resultUnitEl.textContent,925,390,160,32); ctx.font='600 16px ui-sans-serif, system-ui, sans-serif'; ctx.fillStyle='#d6eadf'; wrapText(ctx,breakdownEl.textContent,760,460,330,22); ctx.fillStyle='#64726b'; ctx.font='500 18px ui-sans-serif, system-ui, sans-serif'; ctx.fillText('equivale.net/',60,572); const a=document.createElement('a'); a.href=c.toDataURL('image/png'); a.download='equivale-resultado.png'; a.click(); setStatus('Imagen generada y descargada.'); });
   const histCategory=document.getElementById('hist-category'), histYear=document.getElementById('hist-year'), pickList=document.getElementById('pick-list'), chartArea=document.getElementById('chart-area'), chartEmpty=document.getElementById('chart-empty');
   const selectedBars=[];
   const stackYear=document.getElementById('hist-stack-year'), stackCategory=document.getElementById('hist-stack-category');
