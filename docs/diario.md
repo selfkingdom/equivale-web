@@ -1,0 +1,19 @@
+# Diario de desarrollo
+
+## 2026-11-27 · Verificación de producción
+
+- **Implementado:** procedimiento de comprobación y reversión documentado. [EQ-002](pendientes.md#eq-002)
+- **Probado:** consulta pública del HTML y comparación con el código local, más revisión de la ejecución de GitHub Pages. [Evidencia](despliegue.md)
+- **Aprobado:** Jorge autorizó versionar la documentación y verificar producción. Se preparó una rama separada para la documentación.
+- **Publicado:** se confirmó la versión de aplicación que ya estaba en producción. La verificación no inició un despliegue.
+
+## 2026-11-27 · Sistema de documentación
+
+- **Implementado:** estructura documental y reglas de mantenimiento en el árbol local. Consulta la [decisión 0001](decisiones/0001-documentacion-versionada.md).
+- **Probado:** comprobación local de los archivos Markdown, su codificación, sus enlaces relativos y el alcance documental del cambio.
+- **Aprobado:** Jorge aprobó la estructura y las reglas de mantenimiento antes de editar.
+- **Publicado:** pendiente. El cambio está en el árbol local.
+
+## 2026-11-27 · Auditoría inicial
+
+Revisión de solo lectura del repositorio. La referencia de código y las comprobaciones constan en [Estado](estado.md). Los hallazgos que requieren seguimiento están en [Pendientes](pendientes.md).
