@@ -4,6 +4,8 @@ Prioridades propuestas a partir de la auditoría inicial. Los criterios de cierr
 
 ## Próximo
 
+- Cerrar la comprobación de analítica del dominio y del reto diario. [EQ-008](pendientes.md#eq-008) y [EQ-009](pendientes.md#eq-009)
+
 - Mejorar la fiabilidad de las comparativas económicas. [EQ-001](pendientes.md#eq-001)
 
 ## Después

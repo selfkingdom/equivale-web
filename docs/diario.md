@@ -1,5 +1,12 @@
 # Diario de desarrollo
 
+## 2026-11-27 · Privacidad y analítica de la 5.15.0
+
+- **Implementado:** apartado bilingüe de privacidad en el HTML local, reconstruido a partir del contenido descrito en el plan previo.
+- **Probado:** sintaxis de JavaScript y ejecución de la localización del aviso en español e inglés. La comprobación de recepción de estadísticas queda en [EQ-008](pendientes.md#eq-008) y [EQ-009](pendientes.md#eq-009).
+- **Aprobado:** Jorge revisó el aviso en local y autorizó publicar la versión en equivale.net y comprobar las estadísticas de Cloudflare.
+- **Publicado:** pendiente. El panel de Cloudflare requiere inicio de sesión.
+
 ## 2026-11-27 · Verificación de producción
 
 - **Implementado:** procedimiento de comprobación y reversión documentado. [EQ-002](pendientes.md#eq-002)

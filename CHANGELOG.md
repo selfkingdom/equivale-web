@@ -2,7 +2,9 @@
 
 ## Sin publicar
 
-No hay cambios funcionales registrados en esta sección.
+### 5.15.0
+
+- Añade al pie de página un apartado bilingüe de privacidad y estadísticas sobre Web Analytics, Adivina, el almacenamiento local y Formspree.
 
 ## 5.14.0
 

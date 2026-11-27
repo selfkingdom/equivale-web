@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="equivale-version" content="5.14.0">
+  <meta name="equivale-version" content="5.15.0">
   <meta name="theme-color" content="#f7f7f4">
   <link rel="canonical" href="https://equivale.net/">
   <meta name="description" content="Convierte cualquier cantidad en gasto público, edificios, bienes y eventos. Una cifra, una comparación.">
@@ -126,6 +126,9 @@
     .contact-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
     .contact-note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
     footer{text-align:center;padding:7px 20px 13px;color:#8b968e;font-size:11px}
+    .privacy-details{max-width:640px;margin:10px auto 0;color:var(--muted);font-size:13px;line-height:1.55}
+    .privacy-details summary{cursor:pointer;width:fit-content;margin:auto;color:var(--green)}
+    .privacy-details ul{margin:8px 0;padding-inline-start:24px;text-align:start}
     .quiz-footer-note{display:none;max-width:720px;margin:8px auto 0;line-height:1.5;font-size:11px;color:var(--muted);text-align:center}
     body:has(#panel-adivina.active) .quiz-footer-note{display:block}
     @media (max-width:820px){.historico-controls{grid-template-columns:1fr 1fr}.historico-controls .fullrow{grid-column:1/-1}}
@@ -363,6 +366,15 @@
   </main>
   <footer><span id="footer-main">Equivale compara magnitudes. No equipara financiación pública y privada. * Ajustado por inflación cuando se indica.</span>
     <p class="quiz-footer-note" id="quiz-consent-note"></p>
+    <details class="privacy-details">
+      <summary id="privacy-title">Privacidad y estadísticas</summary>
+      <ul>
+        <li id="privacy-web">Cloudflare Web Analytics mide las visitas y el rendimiento de la web. Esta medición es independiente de la opción de compartir estadísticas de Adivina.</li>
+        <li id="privacy-quiz">Si activas las estadísticas de Adivina, se envían a Cloudflare el identificador aleatorio y la fecha de la partida, el tipo de pregunta, el acierto y el tiempo aproximado de respuesta. Puedes desactivar los envíos futuros durante la partida.</li>
+        <li id="privacy-local">El progreso de Adivina y, si compartes estadísticas, los datos de la partida pendientes de envío se guardan en el almacenamiento local de tu navegador.</li>
+        <li id="privacy-contact">Formspree procesa el mensaje que envías desde Contacto y el nombre y correo electrónico si los facilitas, para que podamos gestionar tu mensaje y responderte.</li>
+      </ul>
+    </details>
   </footer>
 
   <script>
@@ -672,6 +684,13 @@
   for(const [name,url] of Object.entries(SUPPORT_URLS)){if(!/^https:\/\//i.test(url))continue;const a=document.createElement('a');a.textContent=name;a.href=url;a.target='_blank';a.rel='noopener noreferrer';document.getElementById('collab-links').append(a);}
   if(document.getElementById('collab-links').children.length)document.getElementById('collab-pending').hidden=true;
   if(UI_LANG!=='en')return;
+  for(const [id, label] of Object.entries({
+    'privacy-title':'Privacy and analytics',
+    'privacy-web':'Cloudflare Web Analytics measures visits and site performance. This runs independently of the option to share daily challenge statistics.',
+    'privacy-quiz':'If you opt in to challenge statistics, Cloudflare receives a random game ID, the game date, the question type, whether you answered correctly and your approximate response time. You can turn off future submissions during the game.',
+    'privacy-local':'Your challenge progress and, if you opt in, game statistics waiting to be sent are saved in your browser’s local storage.',
+    'privacy-contact':'Formspree processes your contact message and any name or email address you provide so we can handle your message and reply.'
+  })) document.getElementById(id).textContent=label;
   document.title='Equivale · Putting costs into perspective';
   const translations=[
     ['.nav-tag','Numbers, in perspective.'],['.eyebrow','The cost of things'],['.intro > p','Enter an amount and compare it with public spending, buildings, goods and events.'],['[data-panel="historico"]','History'],['[data-panel="adivina"]','Daily quiz'],['[data-panel="contacto"]','Contact'],['label[for="amount"]','How much does it cost?'],['label[for="reference"]','What is it equivalent to?'],['#amount-error','Enter a valid non-negative amount.'],['[data-category="publico"]','Public spending'],['[data-category="edificios"]','Buildings'],['[data-category="bienes"]','Goods'],['[data-category="eventos"]','Events'],['.answer-caption','This amount is approximately equivalent to'],['#share-whatsapp','Share on WhatsApp'],['#share-x','Share on X'],['#share-substack','Share on Substack'],['#download-image','Generate image'],['.source summary','Sources and methodology'],['#source-link','View original source'],['.source .small-print','Public spending is expressed in days; the other categories use multiples. Events marked * are inflation-adjusted where indicated. Original data labels and source notes remain in Spanish.'],['#panel-historico .section-title','Interactive history'],['#panel-historico .section-sub','Choose a category and year, then select or deselect concepts. The chart updates immediately in selection order.'],['label[for="hist-category"]','Category'],['label[for="hist-year"]','Year'],['.hist-stack-options legend','Chart options'],['#hist-stack-year + span','Stack by year'],['#hist-stack-category + span','Stack by category'],['label[for="hist-search"]','Available concepts'],['#chart-empty','Select comparisons to start the chart.'],['#hist-axis-title','Millions of euros · October 2026 prices'],['#hist-sources summary','Sources for selected comparisons'],['#quiz-title','Guess · Daily challenge'],['#quiz-sub','Five questions to put numbers into perspective. A new challenge every day.'],['#quiz-method','* Amounts adjusted to October 2026 prices where marked. Other amounts and changes are nominal. New challenge at midnight (mainland Spain time).'],['#panel-contacto .section-title','Contact'],['#panel-contacto .section-sub','Send a suggestion, correction or proposal for a new comparison.'],['label[for="contact-name"]','Name'],['label[for="contact-message"]','Message'],['#contact-send','Send suggestion'],['#contact-status','Formspree will show a confirmation or explain any error.'],['#collab-title','Support the project'],['#collab-desc','Equivale is an independent, free-to-access project by Self Kingdom. If you find it useful, you can help maintain and improve it with a voluntary contribution through Ko-fi.'],['#collab-pending','Contribution options coming soon.'],['#footer-main','Equivale compares magnitudes; it does not equate public and private funding. * Inflation-adjusted where indicated.']

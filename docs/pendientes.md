@@ -27,3 +27,11 @@
 ## EQ-007
 
 **Media · Abierto · Comprobaciones al actualizar datos.** El conversor, el histórico y el reto combinan datos compartidos con cifras específicas. Cierra al disponer de comprobaciones repetibles de fuentes, unidades y años, ajuste de IPC y coherencia de los ejemplos entre funciones. [Arquitectura](arquitectura.md)
+
+## EQ-008
+
+**Alta · Pendiente de verificar · Web Analytics en el dominio actual.** Comprueba en Cloudflare el hostname configurado, la disponibilidad del histórico anterior y la recepción de una visita de `equivale.net`. La documentación del proveedor permite editar el hostname de una instalación manual. El efecto sobre el histórico de esta propiedad está pendiente de comprobar en el panel. [Documentación de Cloudflare](https://developers.cloudflare.com/web-analytics/get-started/)
+
+## EQ-009
+
+**Media · Pendiente de verificar · Recepción de estadísticas de Adivina.** Verifica por separado la llegada de eventos consentidos desde el origen de producción al Worker y su registro. El cliente y la configuración del Worker tienen ciclos de despliegue independientes. [Arquitectura](arquitectura.md)

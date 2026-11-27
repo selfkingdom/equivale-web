@@ -14,5 +14,6 @@
 - **Formspree.** Recibe el envío HTML de contacto con mensaje y, cuando se facilitan, nombre y correo. [prueba-contacto.html](../prueba-contacto.html) usa el mismo servicio.
 - **Cloudflare Workers.** Recibe estadísticas del reto con consentimiento por partida. El cliente envía eventos con ID aleatorio, fecha y, para respuestas, tipo, acierto y tiempo aproximado. El código y la configuración del Worker quedan fuera de este repositorio.
 - **Cloudflare Web Analytics.** Carga su propio script con independencia de la opción de estadísticas del reto.
+- **Aviso de privacidad.** El pie incluye un desplegable en español e inglés que explica la medición web, la participación opcional de Adivina, su persistencia local y el uso de Formspree.
 - **Compartir y colaborar.** WhatsApp y X abren sus interfaces para compartir. Substack abre el perfil y usa el portapapeles. Ko-fi es un enlace de colaboración.
 - **Dominio y rastreo.** [CNAME](../CNAME) declara el dominio. [robots.txt](../robots.txt) remite a [sitemap.xml](../sitemap.xml). Consulta [Estado](estado.md) para conocer qué se ha verificado del despliegue.
